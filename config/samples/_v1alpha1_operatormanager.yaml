@@ -1,0 +1,12 @@
+apiVersion: kom.kkb.jp/v1alpha1
+kind: OperatorManager
+metadata:
+  labels:
+    app.kubernetes.io/name: operatormanager
+    app.kubernetes.io/instance: operatormanager-sample
+    app.kubernetes.io/part-of: kom
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kom
+  name: operatormanager-sample
+spec:
+  # TODO(user): Add fields here
