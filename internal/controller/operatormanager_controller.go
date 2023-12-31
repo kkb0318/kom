@@ -22,7 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+	ctrllog"sigs.k8s.io/controller-runtime/pkg/log"
 
 	komkkbjpv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 )
@@ -47,10 +47,12 @@ type OperatorManagerReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.15.0/pkg/reconcile
 func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+  log := ctrllog.FromContext(ctx)
+  log.Info("start reconciling")
 
-	// TODO(user): your logic here
+  // Apply Resources to pull helm, oci, git
 
+  log.Info("successfully reconciled")
 	return ctrl.Result{}, nil
 }
 

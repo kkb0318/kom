@@ -28,9 +28,23 @@ type OperatorManagerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of OperatorManager. Edit operatormanager_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Resources []Resource `json:"resources,omitempty"`
 }
+
+type Resource struct {
+	Name      string         `json:"name,omitempty"`
+	Namespace string         `json:"namespace,omitempty"`
+	Type      RepositoryType `json:"type,omitempty"`
+	Url       string         `json:"url,omitempty"`
+}
+
+type RepositoryType string
+
+const (
+	OciRepository  RepositoryType = "oci"
+	HelmRepository RepositoryType = "helm"
+	GitRepository  RepositoryType = "git"
+)
 
 // OperatorManagerStatus defines the observed state of OperatorManager
 type OperatorManagerStatus struct {

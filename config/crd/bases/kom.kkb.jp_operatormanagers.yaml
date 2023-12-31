@@ -34,10 +34,19 @@ spec:
           spec:
             description: OperatorManagerSpec defines the desired state of OperatorManager
             properties:
-              foo:
-                description: Foo is an example field of OperatorManager. Edit operatormanager_types.go
-                  to remove/update
-                type: string
+              resources:
+                items:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                    type:
+                      type: string
+                    url:
+                      type: string
+                  type: object
+                type: array
             type: object
           status:
             description: OperatorManagerStatus defines the observed state of OperatorManager
