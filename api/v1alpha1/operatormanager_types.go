@@ -36,6 +36,11 @@ type Resource struct {
 	Namespace string         `json:"namespace,omitempty"`
 	Type      RepositoryType `json:"type,omitempty"`
 	Url       string         `json:"url,omitempty"`
+	Charts    []Chart        `json:"charts,omitempty"`
+}
+type Chart struct {
+	Name    string `json:"name,omitempty"`
+	Version string `json:"version,omitempty"`
 }
 
 type RepositoryType string
