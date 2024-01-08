@@ -22,10 +22,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	ctrllog"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 
-	komkkbjpv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 )
+
+const komFinalizer = "kom.kkb.jp/finalizer"
 
 // OperatorManagerReconciler reconciles a OperatorManager object
 type OperatorManagerReconciler struct {
@@ -37,6 +40,13 @@ type OperatorManagerReconciler struct {
 //+kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/finalizers,verbs=update
 
+// SetupWithManager sets up the controller with the Manager.
+func (r *OperatorManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&komv1alpha1.OperatorManager{}).
+		Complete(r)
+}
+
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
@@ -46,19 +56,39 @@ type OperatorManagerReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.15.0/pkg/reconcile
-func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-  log := ctrllog.FromContext(ctx)
-  log.Info("start reconciling")
+func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, retErr error) {
+	log := ctrllog.FromContext(ctx)
+	obj := &komv1alpha1.OperatorManager{}
+	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
 
-  // Apply Resources to pull helm, oci, git
+	// Apply Resources to pull helm, oci, git
+	if !controllerutil.ContainsFinalizer(obj, komFinalizer) {
+		controllerutil.AddFinalizer(obj, komFinalizer)
+		return ctrl.Result{Requeue: true}, nil
+	}
+	// Examine if the object is under deletion.
+	if !obj.DeletionTimestamp.IsZero() {
+		retErr = r.reconcileDelete(ctx, obj)
+		return
+	}
+	if err := r.reconcile(ctx, req); err != nil {
+		return ctrl.Result{}, err
+	}
 
-  log.Info("successfully reconciled")
+	log.Info("successfully reconciled")
 	return ctrl.Result{}, nil
 }
 
-// SetupWithManager sets up the controller with the Manager.
-func (r *OperatorManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&komkkbjpv1alpha1.OperatorManager{}).
-		Complete(r)
+func (r *OperatorManagerReconciler) reconcile(ctx context.Context, req ctrl.Request) error {
+	// TODO: main
+	return nil
+}
+
+func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
+	// TODO: delete
+	// Remove our finalizer from the list
+	controllerutil.RemoveFinalizer(obj, komFinalizer)
+	return nil
 }
