@@ -26,6 +26,8 @@ import (
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	komtool "github.com/kkb0318/kom/internal/tool"
+	komk8s "github.com/kkb0318/kom/internal/kubernetes"
 )
 
 const komFinalizer = "kom.kkb.jp/finalizer"
@@ -73,7 +75,7 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		retErr = r.reconcileDelete(ctx, obj)
 		return
 	}
-	if err := r.reconcile(ctx, req); err != nil {
+	if err := r.reconcile(ctx, obj); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -81,8 +83,9 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	return ctrl.Result{}, nil
 }
 
-func (r *OperatorManagerReconciler) reconcile(ctx context.Context, req ctrl.Request) error {
-	// TODO: main
+func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
+	rm := komtool.NewResourceManager(*obj)
+  komk8s.Apply(rm)
 	return nil
 }
 

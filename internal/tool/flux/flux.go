@@ -1,15 +1,26 @@
 package flux
 
-type Flux struct{}
+import (
+	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	komtool "github.com/kkb0318/kom/internal/tool"
+)
 
-func (f *Flux) Helm() error {
-	return nil
+type Flux struct {
+	obj komv1alpha1.OperatorManager
 }
 
-func (f *Flux) Oci() error {
-	return nil
+func NewFlux(obj komv1alpha1.OperatorManager) *Flux {
+	return &Flux{obj}
 }
 
-func (f *Flux) Git() error {
-	return nil
+func (f *Flux) Helm() ([]komtool.Resource, error) {
+	return nil, nil
+}
+
+func (f *Flux) Oci() ([]komtool.Resource, error) {
+	return nil, nil
+}
+
+func (f *Flux) Git() ([]komtool.Resource, error) {
+	return nil, nil
 }

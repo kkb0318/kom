@@ -25,30 +25,35 @@ import (
 
 // OperatorManagerSpec defines the desired state of OperatorManager
 type OperatorManagerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Prune enables garbage collection.
+	// +required
+	Prune bool `json:"prune"`
 
-	Resources []Resource `json:"resources,omitempty"`
+	Tool ToolType `json:"tool,omitempty"`
+	// +required
+	Resource Resource `json:"resource"`
 }
 
 type Resource struct {
-	Name      string         `json:"name,omitempty"`
-	Namespace string         `json:"namespace,omitempty"`
-	Type      RepositoryType `json:"type,omitempty"`
-	Url       string         `json:"url,omitempty"`
-	Charts    []Chart        `json:"charts,omitempty"`
+	Helm []Helm `json:"helm,omitempty"`
+}
+
+type Helm struct {
+	Name      string  `json:"name,omitempty"`
+	Namespace string  `json:"namespace,omitempty"`
+	Url       string  `json:"url,omitempty"`
+	Charts    []Chart `json:"charts,omitempty"`
 }
 type Chart struct {
-	Name    string `json:"name,omitempty"`
-	Version string `json:"version,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	Version   string `json:"version,omitempty"`
 }
-
-type RepositoryType string
+type ToolType string
 
 const (
-	OciRepository  RepositoryType = "oci"
-	HelmRepository RepositoryType = "helm"
-	GitRepository  RepositoryType = "git"
+	FluxCDTool ToolType = "flux"
+	ArgoCDTool ToolType = "argo"
 )
 
 // OperatorManagerStatus defines the observed state of OperatorManager

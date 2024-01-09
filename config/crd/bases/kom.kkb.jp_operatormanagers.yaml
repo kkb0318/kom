@@ -34,28 +34,39 @@ spec:
           spec:
             description: OperatorManagerSpec defines the desired state of OperatorManager
             properties:
-              resources:
-                items:
-                  properties:
-                    charts:
-                      items:
-                        properties:
-                          name:
-                            type: string
-                          version:
-                            type: string
-                        type: object
-                      type: array
-                    name:
-                      type: string
-                    namespace:
-                      type: string
-                    type:
-                      type: string
-                    url:
-                      type: string
-                  type: object
-                type: array
+              prune:
+                description: Prune enables garbage collection.
+                type: boolean
+              resource:
+                properties:
+                  helm:
+                    items:
+                      properties:
+                        charts:
+                          items:
+                            properties:
+                              name:
+                                type: string
+                              namespace:
+                                type: string
+                              version:
+                                type: string
+                            type: object
+                          type: array
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                        url:
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              tool:
+                type: string
+            required:
+            - prune
+            - resource
             type: object
           status:
             description: OperatorManagerStatus defines the observed state of OperatorManager

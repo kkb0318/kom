@@ -7,8 +7,8 @@ import (
 
 	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
-	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -26,12 +26,11 @@ func NewFluxHelm() (*FluxHelm, error) {
 	namespace := "ack-system"
 	repoUrl := "oci://public.ecr.aws/aws-controllers-k8s"
 	charts := []komv1alpha1.Chart{
-    {
-      Name: "s3-chart",
-      Version: "*.*.*",
-
-    },
-  }
+		{
+			Name:    "s3-chart",
+			Version: "*.*.*",
+		},
+	}
 	helmrepo := sourcev1.HelmRepository{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      repoName,
