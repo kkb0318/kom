@@ -14,7 +14,11 @@ func NewFlux(obj komv1alpha1.OperatorManager) *Flux {
 }
 
 func (f *Flux) Helm() ([]komtool.Resource, error) {
-	return nil, nil
+	helmResources, err := NewFluxHelmList(f.obj.Spec.Resource.Helm)
+	if err != nil {
+		return nil, err
+	}
+	return helmResources, nil
 }
 
 func (f *Flux) Oci() ([]komtool.Resource, error) {

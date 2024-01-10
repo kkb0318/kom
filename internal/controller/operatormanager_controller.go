@@ -26,8 +26,8 @@ import (
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
-	komtool "github.com/kkb0318/kom/internal/tool"
 	komk8s "github.com/kkb0318/kom/internal/kubernetes"
+	"github.com/kkb0318/kom/internal/tool/factory"
 )
 
 const komFinalizer = "kom.kkb.jp/finalizer"
@@ -84,8 +84,11 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 }
 
 func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
-	rm := komtool.NewResourceManager(*obj)
-  komk8s.Apply(rm)
+	rm := factory.NewResourceManager(*obj)
+	err := komk8s.ApplyAll(rm)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
