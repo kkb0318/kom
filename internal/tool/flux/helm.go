@@ -49,10 +49,10 @@ func NewFluxHelmList(objs []komv1alpha1.Helm) ([]komtool.Resource, error) {
 }
 
 func RepositoryType(url string) string {
-  if strings.HasPrefix(url, "oci") {
-    return "oci"
-  } 
-  return "default"
+	if strings.HasPrefix(url, "oci") {
+		return "oci"
+	}
+	return "default"
 }
 
 func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {

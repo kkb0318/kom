@@ -14,4 +14,3 @@ type Resource interface {
 	Repository() client.Object
 	Charts() []client.Object
 }
-
