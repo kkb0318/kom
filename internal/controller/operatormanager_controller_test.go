@@ -1,26 +1,59 @@
 package controller
 
 import (
+	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-var _ = Describe("Memcached controller", func() {
-	Context("Memcached controller test", func() {
-		It("should successfully reconcile a custom resource for Memcached", func() {
+type expected struct {
+	source   types.NamespacedName
+	fetchers []types.NamespacedName
+}
+
+var _ = Describe("OperatorManager controller", func() {
+	Context("OperatorManager controller test", func() {
+		It("should successfully reconcile a custom resource for kom", func() {
 			komName := "test-kom"
-			kom := &komv1alpha1.OperatorManager{}
-			kom.Name = komName
-			kom.Namespace = testNamespace
+			kom := createKom(komName)
 			kom.Spec = komv1alpha1.OperatorManagerSpec{
-				Prune:    true,
-				Resource: komv1alpha1.Resource{},
+				Prune: true,
+				Resource: komv1alpha1.Resource{
+					Helm: []komv1alpha1.Helm{
+						{
+							Name: "",
+							// Namespace: "",
+							Url: "",
+							Charts: []komv1alpha1.Chart{
+								{
+									Name: "",
+									// Namespace: "",
+									Version: "",
+								},
+							},
+						},
+					},
+				},
 			}
 			typeNamespaceName := types.NamespacedName{Name: komName, Namespace: testNamespace}
+
+			expected := expected{
+				source: types.NamespacedName{
+					Name:      "",
+					Namespace: "",
+				},
+				fetchers: []types.NamespacedName{
+					{
+						Name:      "",
+						Namespace: "",
+					},
+				},
+			}
+
 			err := k8sClient.Create(ctx, kom)
 			Expect(err).To(Not(HaveOccurred()))
 
@@ -41,11 +74,17 @@ var _ = Describe("Memcached controller", func() {
 			})
 			Expect(err).To(Not(HaveOccurred()))
 
-			By("Checking if Deployment was successfully created in the reconciliation")
+			By("Checking if Resources were successfully created in the reconciliation")
 			Eventually(func() error {
-				found := &appsv1.Deployment{}
-				return k8sClient.Get(ctx, typeNamespaceName, found)
+				found := &sourcev1.HelmRepository{}
+				return k8sClient.Get(ctx, expected.source, found)
 			}, timeout).Should(Succeed())
+			for _, fetcher := range expected.fetchers {
+				Eventually(func() error {
+					found := &helmv1.HelmRelease{}
+					return k8sClient.Get(ctx, fetcher, found)
+				}, timeout).Should(Succeed())
+			}
 		})
 	})
 })

@@ -27,6 +27,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
 	komkkbjpv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -75,6 +77,11 @@ var _ = BeforeSuite(func() {
 
 	err = komkkbjpv1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
+	// for flux
+	err = sourcev1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+	err = helmv1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
 
 	//+kubebuilder:scaffold:scheme
 
@@ -104,8 +111,47 @@ var _ = AfterSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 })
 
+func createKom(name string) *komkkbjpv1alpha1.OperatorManager {
+	return &komkkbjpv1alpha1.OperatorManager{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       komkkbjpv1alpha1.OperatorManagerKind,
+			APIVersion: sourcev1.GroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: testNamespace,
+		},
+	}
+}
+
 func createNamespace(ns string) *corev1.Namespace {
 	return &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{Name: ns},
+	}
+}
+
+func createHelmRepository(name string) *sourcev1.HelmRepository {
+	return &sourcev1.HelmRepository{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       sourcev1.HelmRepositoryKind,
+			APIVersion: sourcev1.GroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: testNamespace,
+		},
+	}
+}
+
+func createHelmRelease(name string) *helmv1.HelmRelease {
+	return &helmv1.HelmRelease{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       helmv1.HelmReleaseKind,
+			APIVersion: helmv1.GroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: testNamespace,
+		},
 	}
 }
