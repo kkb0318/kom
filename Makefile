@@ -117,7 +117,7 @@ test: manifests generate fmt vet envtest ## Run tests.
 
 .PHONY: test-debug
 test-debug: envtest
-	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" DEBUG=true go test ./... -coverprofile cover.out
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" DEBUG=true go test ./...
 
 
 ##@ Build

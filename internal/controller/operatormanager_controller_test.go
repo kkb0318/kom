@@ -25,14 +25,14 @@ var _ = Describe("OperatorManager controller", func() {
 				Resource: komv1alpha1.Resource{
 					Helm: []komv1alpha1.Helm{
 						{
-							Name: "",
+							Name: "name1",
 							// Namespace: "",
-							Url: "",
+							Url: "https://test.example.com",
 							Charts: []komv1alpha1.Chart{
 								{
-									Name: "",
+									Name: "chart1",
 									// Namespace: "",
-									Version: "",
+									Version: "x.x.x",
 								},
 							},
 						},
