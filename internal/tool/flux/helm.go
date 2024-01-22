@@ -1,8 +1,6 @@
 package flux
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 
@@ -10,7 +8,6 @@ import (
 	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
-	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -38,12 +35,12 @@ func (f *FluxHelm) Charts() []client.Object {
 
 func NewFluxHelmList(objs []komv1alpha1.Helm) ([]komtool.Resource, error) {
 	helmList := make([]komtool.Resource, len(objs))
-	for _, obj := range objs {
+	for i, obj := range objs {
 		helm, err := NewFluxHelm(obj)
 		if err != nil {
 			return nil, err
 		}
-		helmList = append(helmList, helm)
+		helmList[i] = helm
 	}
 	return helmList, nil
 }
@@ -76,18 +73,24 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 		},
 	}
 	hrs := make([]*helmv1.HelmRelease, len(charts))
-	for _, chart := range charts {
-		values := HelmValues{
-			FullnameOverride: fmt.Sprintf("%s-controller", chart),
+	for i, chart := range charts {
+		var chartNs string
+		if chart.Namespace == "" {
+			chartNs = namespace
+		} else {
+			chartNs = chart.Namespace
 		}
-		v, err := json.Marshal(values)
-		if err != nil {
-			return nil, err
-		}
+		// values := HelmValues{
+		// 	FullnameOverride: fmt.Sprintf("%s-controller", chart.Name),
+		// }
+		// v, err := json.Marshal(values)
+		// if err != nil {
+		// 	return nil, err
+		// }
 		hr := &helmv1.HelmRelease{
 			ObjectMeta: v1.ObjectMeta{
 				Name:      chart.Name,
-				Namespace: namespace,
+				Namespace: chartNs,
 			},
 			TypeMeta: v1.TypeMeta{
 				APIVersion: "source.toolkit.fluxcd.io/v2beta2",
@@ -105,12 +108,12 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 						},
 					},
 				},
-				Values: &apiextensionsv1.JSON{
-					Raw: v,
-				},
+				// Values: &apiextensionsv1.JSON{
+				// 	Raw: v,
+				// },
 			},
 		}
-		hrs = append(hrs, hr)
+		hrs[i] = hr
 	}
 	f := &FluxHelm{
 		source: helmrepo,
