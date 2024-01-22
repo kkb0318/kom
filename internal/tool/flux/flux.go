@@ -6,15 +6,15 @@ import (
 )
 
 type Flux struct {
-	obj komv1alpha1.OperatorManager
+	resource komv1alpha1.Resource
 }
 
 func NewFlux(obj komv1alpha1.OperatorManager) *Flux {
-	return &Flux{obj}
+	return &Flux{obj.Spec.Resource}
 }
 
 func (f *Flux) Helm() ([]komtool.Resource, error) {
-	helmResources, err := NewFluxHelmList(f.obj.Spec.Resource.Helm)
+	helmResources, err := NewFluxHelmList(f.resource.Helm)
 	if err != nil {
 		return nil, err
 	}

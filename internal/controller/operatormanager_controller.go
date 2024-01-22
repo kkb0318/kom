@@ -30,7 +30,7 @@ import (
 	"github.com/kkb0318/kom/internal/tool/factory"
 )
 
-const komFinalizer = "kom.kkb.jp/finalizer"
+const komFinalizer = "kom.kkb.jp/finalizers"
 
 // OperatorManagerReconciler reconciles a OperatorManager object
 type OperatorManagerReconciler struct {
@@ -38,9 +38,11 @@ type OperatorManagerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/finalizers,verbs=update
+// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/finalizers,verbs=get;create;update;patch;delete
+// +kubebuilder:rbac:groups=source.toolkit.fluxcd.io,resources=helmrepositories,verbs=get;list;watch;create;update
+// +kubebuilder:rbac:groups=helm.toolkit.fluxcd.io,resources=helmreleases,verbs=get;list;watch;create;update;patch;delete
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *OperatorManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -60,6 +62,7 @@ func (r *OperatorManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.15.0/pkg/reconcile
 func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, retErr error) {
 	log := ctrllog.FromContext(ctx)
+	log.Info("start reconciling")
 	obj := &komv1alpha1.OperatorManager{}
 	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
@@ -68,6 +71,10 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	// Apply Resources to pull helm, oci, git
 	if !controllerutil.ContainsFinalizer(obj, komFinalizer) {
 		controllerutil.AddFinalizer(obj, komFinalizer)
+		if err := r.Update(ctx, obj); err != nil {
+			log.Error(err, "Failed to update custom resource to add finalizer")
+			return ctrl.Result{}, err
+		}
 		return ctrl.Result{Requeue: true}, nil
 	}
 	// Examine if the object is under deletion.
@@ -84,11 +91,15 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 }
 
 func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
+	log := ctrllog.FromContext(ctx)
 	rm := factory.NewResourceManager(*obj)
-	err := komk8s.ApplyAll(rm)
+	handler := komk8s.Handler{Client: r.Client, Owner: komk8s.Owner{Field: "kom"}}
+	err := handler.ApplyAll(ctx, rm)
 	if err != nil {
+		log.Error(err, "server-side apply failed")
 		return err
 	}
+	log.Info("server-side apply completed")
 	return nil
 }
 

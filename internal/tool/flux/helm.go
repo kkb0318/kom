@@ -27,8 +27,8 @@ func (f *FluxHelm) Repository() client.Object {
 
 func (f *FluxHelm) Charts() []client.Object {
 	objs := make([]client.Object, len(f.helm))
-	for _, helm := range f.helm {
-		objs = append(objs, helm)
+	for i, helm := range f.helm {
+		objs[i] = helm
 	}
 	return objs
 }

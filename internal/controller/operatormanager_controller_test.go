@@ -68,7 +68,11 @@ var _ = Describe("OperatorManager controller", func() {
 				Client: k8sClient,
 				Scheme: k8sClient.Scheme(),
 			}
-
+			// add finalizer
+			_, err = komReconciler.Reconcile(ctx, reconcile.Request{
+				NamespacedName: typeNamespaceName,
+			})
+			Expect(err).To(Not(HaveOccurred()))
 			_, err = komReconciler.Reconcile(ctx, reconcile.Request{
 				NamespacedName: typeNamespaceName,
 			})
