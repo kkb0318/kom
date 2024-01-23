@@ -4,6 +4,8 @@ import (
 	"context"
 
 	komtool "github.com/kkb0318/kom/internal/tool"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -39,6 +41,11 @@ func (h Handler) Apply(ctx context.Context, obj client.Object) error {
 		client.ForceOwnership,
 		client.FieldOwner(h.Owner.Field),
 	}
-
-	return h.Client.Patch(ctx, obj, client.Apply, opts...)
+	u := &unstructured.Unstructured{}
+	unstructured, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
+	if err != nil {
+		return err
+	}
+	u.Object = unstructured
+	return h.Client.Patch(ctx, u, client.Apply, opts...)
 }

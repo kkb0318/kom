@@ -50,7 +50,7 @@ var (
 	cfg           *rest.Config
 	k8sClient     client.Client
 	testEnv       *envtest.Environment
-	testNamespace = "kom-test"
+	testNamespace = "kom-system"
 	ctx           = ctrl.SetupSignalHandler()
 )
 

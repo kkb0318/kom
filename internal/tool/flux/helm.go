@@ -46,7 +46,7 @@ func NewFluxHelmList(objs []komv1alpha1.Helm) ([]komtool.Resource, error) {
 }
 
 func RepositoryType(url string) string {
-	if strings.HasPrefix(url, "oci") {
+	if strings.HasPrefix(url, "oci:") {
 		return "oci"
 	}
 	return "default"
@@ -54,7 +54,12 @@ func RepositoryType(url string) string {
 
 func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	repoName := obj.Name
-	namespace := obj.Namespace
+	var namespace string
+	if obj.Namespace == "" {
+		namespace = "kom-system"
+	} else {
+		namespace = obj.Namespace
+	}
 	repoUrl := obj.Url
 	charts := obj.Charts
 	helmrepo := &sourcev1.HelmRepository{
@@ -93,7 +98,7 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 				Namespace: chartNs,
 			},
 			TypeMeta: v1.TypeMeta{
-				APIVersion: "source.toolkit.fluxcd.io/v2beta2",
+				APIVersion: "helm.toolkit.fluxcd.io/v2beta2",
 				Kind:       "HelmRelease",
 			},
 			Spec: helmv1.HelmReleaseSpec{

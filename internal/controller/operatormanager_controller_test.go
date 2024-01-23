@@ -25,13 +25,13 @@ var _ = Describe("OperatorManager controller", func() {
 				Resource: komv1alpha1.Resource{
 					Helm: []komv1alpha1.Helm{
 						{
-							Name: "name1",
-							// Namespace: "",
-							Url: "https://test.example.com",
+							Name: "repo1",
+							Url:  "https://helm.github.io/examples",
+							// Url: "https://stefanprodan.github.io/podinfo",
 							Charts: []komv1alpha1.Chart{
 								{
-									Name: "chart1",
-									// Namespace: "",
+									Name: "hello-world",
+									// Name: "podinfo",
 									Version: "x.x.x",
 								},
 							},
@@ -43,13 +43,13 @@ var _ = Describe("OperatorManager controller", func() {
 
 			expected := expected{
 				source: types.NamespacedName{
-					Name:      "",
-					Namespace: "",
+					Name:      "repo1",
+					Namespace: "kom-system",
 				},
 				fetchers: []types.NamespacedName{
 					{
-						Name:      "",
-						Namespace: "",
+						Name:      "hello-world",
+						Namespace: "kom-system",
 					},
 				},
 			}

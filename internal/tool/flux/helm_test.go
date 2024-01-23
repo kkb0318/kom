@@ -59,7 +59,7 @@ func TestFluxHelm_New(t *testing.T) {
 								Namespace: "chart-ns1",
 							},
 							TypeMeta: v1.TypeMeta{
-								APIVersion: "source.toolkit.fluxcd.io/v2beta2",
+								APIVersion: "helm.toolkit.fluxcd.io/v2beta2",
 								Kind:       "HelmRelease",
 							},
 							Spec: helmv1.HelmReleaseSpec{
