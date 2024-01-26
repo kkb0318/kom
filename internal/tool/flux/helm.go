@@ -56,7 +56,7 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	repoName := obj.Name
 	var namespace string
 	if obj.Namespace == "" {
-		namespace = "kom-system"
+		namespace = komv1alpha1.DefaultNamespace
 	} else {
 		namespace = obj.Namespace
 	}

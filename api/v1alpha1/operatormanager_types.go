@@ -23,6 +23,7 @@ import (
 const (
 	// OperatorManagerKind is the string representation of a OperatorManager.OperatorManagerKind
 	OperatorManagerKind = "OperatorManager"
+	DefaultNamespace    = "kom-system"
 )
 
 // OperatorManagerSpec defines the desired state of OperatorManager
