@@ -1,4 +1,4 @@
 owner: kkb0318
 git-repo: kom
-release-name-template: "{{ .Name }}-chart-{{ .Version }}"
-make-release-latest: true
+release-name-template: "helm-{{ .Name }}-{{ .Version }}"
+make-release-latest: false
