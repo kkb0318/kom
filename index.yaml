@@ -12,6 +12,16 @@ entries:
     - https://github.com/kkb0318/kom/releases/download/kom-chart-0.1.0/kom-0.1.0.tgz
     version: 0.1.0
   - apiVersion: v2
+    appVersion: 0.0.1-alpha.2
+    created: "2024-01-28T00:18:14.875866796Z"
+    description: A Helm chart for Kubernetes
+    digest: d58d145959073bc8c1a987da53f11f1809788f52b17d5e21924a92f97a39be30
+    name: kom
+    type: application
+    urls:
+    - https://github.com/kkb0318/kom/releases/download/helm-kom-0.0.1-alpha.2/kom-0.0.1-alpha.2.tgz
+    version: 0.0.1-alpha.2
+  - apiVersion: v2
     appVersion: 0.0.1-alpha.1
     created: "2024-01-27T08:31:16.963532405Z"
     description: A Helm chart for Kubernetes
@@ -21,4 +31,4 @@ entries:
     urls:
     - https://github.com/kkb0318/kom/releases/download/helm-kom-0.0.1-alpha.1/kom-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2024-01-27T08:31:16.963545269Z"
+generated: "2024-01-28T00:18:14.875888256Z"
