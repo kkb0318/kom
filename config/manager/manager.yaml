@@ -70,7 +70,7 @@ spec:
             - /manager
           args:
             - --leader-elect
-          image: controller:latest
+          image: ghcr.io/kkb0318/kom:APP_VERSION
           name: manager
           securityContext:
             allowPrivilegeEscalation: false
