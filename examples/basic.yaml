@@ -1,0 +1,14 @@
+apiVersion: kom.kkb.jp/v1alpha1
+kind: OperatorManager
+metadata:
+  name: kom
+  namespace: kom-system
+spec:
+  prune: true
+  resource:
+    helm:
+      - name: repo1
+        url: https://helm.github.io/examples
+        charts:
+          - name: hello-world
+            version: x.x.x
