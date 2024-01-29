@@ -118,7 +118,7 @@ func createKom(name string) *komkkbjpv1alpha1.OperatorManager {
 	return &komkkbjpv1alpha1.OperatorManager{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       komkkbjpv1alpha1.OperatorManagerKind,
-			APIVersion: sourcev1.GroupVersion.String(),
+			APIVersion: komkkbjpv1alpha1.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,

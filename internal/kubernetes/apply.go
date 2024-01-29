@@ -7,11 +7,20 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 )
 
 type Handler struct {
-	Client client.Client
-	Owner  Owner
+	client client.Client
+	owner  Owner
+}
+
+// NewHelper returns an initialized Helper.
+func NewHandler(obj client.Object, c client.Client, owner Owner) (*Handler, error) {
+	return &Handler{
+		client: c,
+		owner:  owner,
+	}, nil
 }
 
 func (h Handler) ApplyAll(ctx context.Context, r komtool.ResourceManager) error {
@@ -39,13 +48,20 @@ func (h Handler) ApplyAll(ctx context.Context, r komtool.ResourceManager) error 
 func (h Handler) Apply(ctx context.Context, obj client.Object) error {
 	opts := []client.PatchOption{
 		client.ForceOwnership,
-		client.FieldOwner(h.Owner.Field),
+		client.FieldOwner(h.owner.Field),
 	}
+	gvk, err := apiutil.GVKForObject(obj, h.client.Scheme())
+	if err != nil {
+		return err
+	}
+
 	u := &unstructured.Unstructured{}
 	unstructured, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 	if err != nil {
 		return err
 	}
 	u.Object = unstructured
-	return h.Client.Patch(ctx, u, client.Apply, opts...)
+	u.SetGroupVersionKind(gvk)
+	u.SetManagedFields(nil)
+	return h.client.Patch(ctx, u, client.Apply, opts...)
 }

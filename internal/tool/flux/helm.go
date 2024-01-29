@@ -68,8 +68,8 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 			Namespace: namespace,
 		},
 		TypeMeta: v1.TypeMeta{
-			APIVersion: "source.toolkit.fluxcd.io/v1beta2",
-			Kind:       "HelmRepository",
+			APIVersion: sourcev1.GroupVersion.String(),
+			Kind:       sourcev1.HelmRepositoryKind,
 		},
 		Spec: sourcev1.HelmRepositorySpec{
 			Type:     RepositoryType(repoUrl),
@@ -98,8 +98,8 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 				Namespace: chartNs,
 			},
 			TypeMeta: v1.TypeMeta{
-				APIVersion: "helm.toolkit.fluxcd.io/v2beta2",
-				Kind:       "HelmRelease",
+				APIVersion: helmv1.GroupVersion.String(),
+				Kind:       helmv1.HelmReleaseKind,
 			},
 			Spec: helmv1.HelmReleaseSpec{
 				Chart: helmv1.HelmChartTemplate{
@@ -107,7 +107,7 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 						Chart:   chart.Name,
 						Version: chart.Version,
 						SourceRef: helmv1.CrossNamespaceObjectReference{
-							Kind:      "HelmRepository",
+							Kind:      sourcev1.HelmRepositoryKind,
 							Name:      repoName,
 							Namespace: namespace,
 						},

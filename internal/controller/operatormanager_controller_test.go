@@ -89,6 +89,18 @@ var _ = Describe("OperatorManager controller", func() {
 					return k8sClient.Get(ctx, fetcher, found)
 				}, timeout).Should(Succeed())
 			}
+			By("removing the custom resource for the Kind")
+			Eventually(func() error {
+				return k8sClient.Delete(ctx, kom)
+			}, timeout).Should(Succeed())
+			_, err = komReconciler.Reconcile(ctx, reconcile.Request{
+				NamespacedName: typeNamespaceName,
+			})
+			Expect(err).To(Not(HaveOccurred()))
+			Eventually(func() error {
+				found := &komv1alpha1.OperatorManager{}
+				return k8sClient.Get(ctx, typeNamespaceName, found)
+			}, timeout).Should(Not(Succeed()))
 		})
 	})
 })

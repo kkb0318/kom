@@ -93,8 +93,11 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
 	log := ctrllog.FromContext(ctx)
 	rm := factory.NewResourceManager(*obj)
-	handler := komk8s.Handler{Client: r.Client, Owner: komk8s.Owner{Field: "kom"}}
-	err := handler.ApplyAll(ctx, rm)
+	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
+	if err != nil {
+		return err
+	}
+	err = handler.ApplyAll(ctx, rm)
 	if err != nil {
 		log.Error(err, "server-side apply failed")
 		return err
@@ -104,8 +107,7 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 }
 
 func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
-	// TODO: delete
 	// Remove our finalizer from the list
 	controllerutil.RemoveFinalizer(obj, komFinalizer)
-	return nil
+	return r.Update(ctx, obj)
 }
