@@ -11,8 +11,8 @@ import (
 )
 
 type expected struct {
-	source   types.NamespacedName
-	fetchers []types.NamespacedName
+	source types.NamespacedName
+	charts []types.NamespacedName
 }
 
 var _ = Describe("OperatorManager controller", func() {
@@ -46,7 +46,7 @@ var _ = Describe("OperatorManager controller", func() {
 					Name:      "repo1",
 					Namespace: "kom-system",
 				},
-				fetchers: []types.NamespacedName{
+				charts: []types.NamespacedName{
 					{
 						Name:      "hello-world",
 						Namespace: "kom-system",
@@ -83,7 +83,7 @@ var _ = Describe("OperatorManager controller", func() {
 				found := &sourcev1.HelmRepository{}
 				return k8sClient.Get(ctx, expected.source, found)
 			}, timeout).Should(Succeed())
-			for _, fetcher := range expected.fetchers {
+			for _, fetcher := range expected.charts {
 				Eventually(func() error {
 					found := &helmv1.HelmRelease{}
 					return k8sClient.Get(ctx, fetcher, found)
@@ -101,6 +101,18 @@ var _ = Describe("OperatorManager controller", func() {
 				found := &komv1alpha1.OperatorManager{}
 				return k8sClient.Get(ctx, typeNamespaceName, found)
 			}, timeout).Should(Not(Succeed()))
+
+			By("Checking if Resources were successfully deleted in the reconciliation")
+			Eventually(func() error {
+				found := &sourcev1.HelmRepository{}
+				return k8sClient.Get(ctx, expected.source, found)
+			}, timeout).Should(Not(Succeed()))
+			for _, fetcher := range expected.charts {
+				Eventually(func() error {
+					found := &helmv1.HelmRelease{}
+					return k8sClient.Get(ctx, fetcher, found)
+				}, timeout).Should(Not(Succeed()))
+			}
 		})
 	})
 })

@@ -108,6 +108,17 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 
 func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
 	// Remove our finalizer from the list
+	log := ctrllog.FromContext(ctx)
+	rm := factory.NewResourceManager(*obj)
+	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
+	if err != nil {
+		return err
+	}
+	err = handler.DeleteAll(ctx, rm)
+	if err != nil {
+		log.Error(err, "deletion failed")
+		return err
+	}
 	controllerutil.RemoveFinalizer(obj, komFinalizer)
 	return r.Update(ctx, obj)
 }
