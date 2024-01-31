@@ -17,7 +17,11 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 const (
@@ -61,8 +65,49 @@ const (
 
 // OperatorManagerStatus defines the observed state of OperatorManager
 type OperatorManagerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Inventory of applied resources
+	AppliedResources []AppliedResource `json:"appliedResources,omitempty"`
+}
+
+// Unique identifier for the resource,  "namespace-name-kind-group-apiversion"
+type AppliedResource struct {
+	// Kind of the Kubernetes resource, e.g., Deployment, Service, etc.
+	Kind string `json:"kind"`
+	// APIVersion of the resource, e.g., "apps/v1"
+	APIVersion string `json:"apiVersion"`
+	// Name of the resource
+	Name string `json:"name"`
+	// Namespace of the resource, if applicable
+	Namespace string `json:"namespace,omitempty"`
+}
+
+
+// ToUnstructured converts an AppliedResource into an Unstructured object.
+// It returns an error if the conversion fails or if the Unstructured object cannot be created.
+func (a AppliedResource) ToUnstructured() (*unstructured.Unstructured, error) {
+    gvk := schema.FromAPIVersionAndKind(a.APIVersion, a.Kind)
+    // Verify if the GroupVersionKind (GVK) is properly parsed
+    if gvk.Group == "" && gvk.Version == "" {
+        return nil, fmt.Errorf("failed to parse GroupVersionKind from APIVersion and Kind: %v", gvk)
+    }
+    // Ensure the resource name is not empty
+    if a.Name == "" {
+        return nil, fmt.Errorf("resource name is required but was not provided")
+    }
+    // Ensure the namespace is provided for namespaced resources
+    if a.Namespace == "" {
+        return nil, fmt.Errorf("namespace is required for namespaced resources but was not provided")
+    }
+    // Create and populate the Unstructured object
+    u := &unstructured.Unstructured{}
+    u.SetGroupVersionKind(schema.GroupVersionKind{
+        Group:   gvk.Group,
+        Kind:    gvk.Kind,
+        Version: gvk.Version,
+    })
+    u.SetName(a.Name)
+    u.SetNamespace(a.Namespace)
+    return u, nil
 }
 
 //+kubebuilder:object:root=true
