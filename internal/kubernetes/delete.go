@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	komtool "github.com/kkb0318/kom/internal/tool"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -14,24 +13,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func (h Handler) DeleteAll(ctx context.Context, r komtool.ResourceManager) error {
-	resources, err := r.Helm()
-	if err != nil {
-		return err
-	}
-	for _, resource := range resources {
-		repo := resource.Repository()
-		// TODO: use h.Delete with unstructed resource
-		err = h.client.Delete(ctx, repo)
+func (h *Handler) DeleteAll(ctx context.Context, resources []*unstructured.Unstructured, opts DeleteOptions) error {
+	for _, r := range resources {
+		err := h.Delete(ctx, r, opts)
 		if err != nil {
 			return err
-		}
-		charts := resource.Charts()
-		for _, chart := range charts {
-			err = h.client.Delete(ctx, chart)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil

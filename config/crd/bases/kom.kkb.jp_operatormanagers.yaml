@@ -70,6 +70,31 @@ spec:
             type: object
           status:
             description: OperatorManagerStatus defines the observed state of OperatorManager
+            properties:
+              appliedResources:
+                description: Inventory of applied resources
+                items:
+                  description: Unique identifier for the resource,  "namespace-name-kind-group-apiversion"
+                  properties:
+                    apiVersion:
+                      description: APIVersion of the resource, e.g., "apps/v1"
+                      type: string
+                    kind:
+                      description: Kind of the Kubernetes resource, e.g., Deployment,
+                        Service, etc.
+                      type: string
+                    name:
+                      description: Name of the resource
+                      type: string
+                    namespace:
+                      description: Namespace of the resource, if applicable
+                      type: string
+                  required:
+                  - apiVersion
+                  - kind
+                  - name
+                  type: object
+                type: array
             type: object
         type: object
     served: true

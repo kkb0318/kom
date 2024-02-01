@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -27,6 +28,7 @@ import (
 
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komk8s "github.com/kkb0318/kom/internal/kubernetes"
+	komstatus "github.com/kkb0318/kom/internal/status"
 	"github.com/kkb0318/kom/internal/tool/factory"
 )
 
@@ -109,12 +111,18 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
 	// Remove our finalizer from the list
 	log := ctrllog.FromContext(ctx)
-	rm := factory.NewResourceManager(*obj)
+	resources, err := komstatus.ToListUnstructed(obj.Status.AppliedResources)
+	if err != nil {
+		return err
+	}
 	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
 	if err != nil {
 		return err
 	}
-	err = handler.DeleteAll(ctx, rm)
+	opts := komk8s.DeleteOptions{
+		DeletionPropagation: metav1.DeletePropagationBackground,
+	}
+	err = handler.DeleteAll(ctx, resources, opts)
 	if err != nil {
 		log.Error(err, "deletion failed")
 		return err
