@@ -95,11 +95,12 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
 	log := ctrllog.FromContext(ctx)
 	rm := factory.NewResourceManager(*obj)
+
 	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
 	if err != nil {
 		return err
 	}
-	err = handler.ApplyAll(ctx, rm)
+  _, err = handler.ApplyAll(ctx, rm)
 	if err != nil {
 		log.Error(err, "server-side apply failed")
 		return err
