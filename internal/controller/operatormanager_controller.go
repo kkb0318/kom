@@ -23,6 +23,7 @@ import (
 	komk8s "github.com/kkb0318/kom/internal/kubernetes"
 	komstatus "github.com/kkb0318/kom/internal/status"
 	"github.com/kkb0318/kom/internal/tool/factory"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/errors"
@@ -75,7 +76,11 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	}
 	defer func() {
 		if err := handler.PatchStatus(ctx, obj); err != nil {
-			retErr = errors.NewAggregate([]error{retErr, err})
+			if !obj.GetDeletionTimestamp().IsZero() {
+				retErr = errors.FilterOut(err, func(e error) bool { return apierrors.IsNotFound(e) })
+			} else {
+				retErr = errors.NewAggregate([]error{retErr, err})
+			}
 		}
 	}()
 

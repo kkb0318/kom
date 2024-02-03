@@ -50,10 +50,10 @@ func ToUnstructured(a komv1alpha1.AppliedResource) (*unstructured.Unstructured, 
 }
 
 func ToAppliedResource(u unstructured.Unstructured) (*komv1alpha1.AppliedResource, error) {
-  a := &komv1alpha1.AppliedResource{}
-  a.Name = u.GetName()
-  a.Namespace = u.GetNamespace()
-  a.Kind = u.GetObjectKind().GroupVersionKind().Kind
-  a.APIVersion = u.GetAPIVersion()
-  return a, nil
+	a := &komv1alpha1.AppliedResource{}
+	a.Name = u.GetName()
+	a.Namespace = u.GetNamespace()
+	a.Kind = u.GetObjectKind().GroupVersionKind().Kind
+	a.APIVersion = u.GetAPIVersion()
+	return a, nil
 }

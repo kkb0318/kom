@@ -77,7 +77,6 @@ type AppliedResource struct {
 	Namespace string `json:"namespace,omitempty"`
 }
 
-
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 

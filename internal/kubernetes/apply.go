@@ -76,12 +76,12 @@ func (h Handler) Apply(ctx context.Context, obj client.Object) (*komv1alpha1.App
 	return komstatus.ToAppliedResource(*u)
 }
 
-func (h Handler) PatchStatus(ctx context.Context, obj client.Object)  error {
-  	opts := &client.SubResourcePatchOptions{
-    PatchOptions: client.PatchOptions{
+func (h Handler) PatchStatus(ctx context.Context, obj client.Object) error {
+	opts := &client.SubResourcePatchOptions{
+		PatchOptions: client.PatchOptions{
 			FieldManager: h.owner.Field,
-    },
-  }
+		},
+	}
 	gvk, err := apiutil.GVKForObject(obj, h.client.Scheme())
 	if err != nil {
 		return err
