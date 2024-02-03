@@ -13,16 +13,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func (h *Handler) DeleteAll(ctx context.Context, resources []*unstructured.Unstructured, opts DeleteOptions) error {
-	for _, r := range resources {
-		err := h.Delete(ctx, r, opts)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // DeleteOptions contains options for delete requests.
 type DeleteOptions struct {
 	// DeletionPropagation decides how the garbage collector will handle the propagation.
@@ -32,6 +22,16 @@ type DeleteOptions struct {
 	// based on the labels.
 	// A nil Inclusions map means all objects are subject to deletion
 	Inclusions map[string]string
+}
+
+func (h *Handler) DeleteAll(ctx context.Context, resources []*unstructured.Unstructured, opts DeleteOptions) error {
+	for _, r := range resources {
+		err := h.Delete(ctx, r, opts)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Delete deletes the given object (not found errors are ignored).

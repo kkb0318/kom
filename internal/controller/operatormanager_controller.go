@@ -19,17 +19,17 @@ package controller
 import (
 	"context"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
-
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komk8s "github.com/kkb0318/kom/internal/kubernetes"
 	komstatus "github.com/kkb0318/kom/internal/status"
 	"github.com/kkb0318/kom/internal/tool/factory"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/errors"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 const komFinalizer = "kom.kkb.jp/finalizers"
@@ -69,6 +69,15 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+	handler, err := komk8s.NewHandler(r.Client, komk8s.Owner{Field: "kom"})
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	defer func() {
+		if err := handler.PatchStatus(ctx, obj); err != nil {
+			retErr = errors.NewAggregate([]error{retErr, err})
+		}
+	}()
 
 	// Apply Resources to pull helm, oci, git
 	if !controllerutil.ContainsFinalizer(obj, komFinalizer) {
@@ -81,10 +90,10 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	}
 	// Examine if the object is under deletion.
 	if !obj.DeletionTimestamp.IsZero() {
-		retErr = r.reconcileDelete(ctx, obj)
+		retErr = r.reconcileDelete(ctx, obj, *handler)
 		return
 	}
-	if err := r.reconcile(ctx, obj); err != nil {
+	if err := r.reconcile(ctx, obj, *handler); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -92,31 +101,28 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	return ctrl.Result{}, nil
 }
 
-func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
+func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager, handler komk8s.Handler) error {
 	log := ctrllog.FromContext(ctx)
 	rm := factory.NewResourceManager(*obj)
 
-	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
-	if err != nil {
-		return err
-	}
-  _, err = handler.ApplyAll(ctx, rm)
+	appliedResources, err := handler.ApplyAll(ctx, rm)
+	// TODO: when partial resources applied, status not updated
 	if err != nil {
 		log.Error(err, "server-side apply failed")
 		return err
 	}
+	obj.Status.AppliedResources = appliedResources
+	// TODO: delete stale resources
+	// 1. diff old and new appliedResources
+	// 2. delete diff resources
 	log.Info("server-side apply completed")
 	return nil
 }
 
-func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager) error {
+func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager, handler komk8s.Handler) error {
 	// Remove our finalizer from the list
 	log := ctrllog.FromContext(ctx)
 	resources, err := komstatus.ToListUnstructed(obj.Status.AppliedResources)
-	if err != nil {
-		return err
-	}
-	handler, err := komk8s.NewHandler(obj, r.Client, komk8s.Owner{Field: "kom"})
 	if err != nil {
 		return err
 	}
