@@ -127,7 +127,7 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *komv1alpha1.OperatorManager, handler komk8s.Handler) error {
 	// Remove our finalizer from the list
 	log := ctrllog.FromContext(ctx)
-	resources, err := komstatus.ToListUnstructed(obj.Status.AppliedResources)
+	resources, err := komstatus.ToListUnstructured(obj.Status.AppliedResources)
 	if err != nil {
 		return err
 	}

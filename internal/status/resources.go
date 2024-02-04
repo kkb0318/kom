@@ -1,6 +1,7 @@
 package status
 
 import (
+	"errors"
 	"fmt"
 
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
@@ -8,7 +9,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func ToListUnstructed(resources []komv1alpha1.AppliedResource) ([]*unstructured.Unstructured, error) {
+// Diff returns the unstructed objects that do not exist in the b resources (a-b)
+func Diff(a, b komv1alpha1.AppliedResourceList) ([]*unstructured.Unstructured, error) {
+	return ToListUnstructured(a.Diff(b))
+}
+
+func ToListUnstructured(resources komv1alpha1.AppliedResourceList) ([]*unstructured.Unstructured, error) {
 	objects := make([]*unstructured.Unstructured, 0)
 	for _, r := range resources {
 		u, err := ToUnstructured(r)
@@ -27,6 +33,9 @@ func ToUnstructured(a komv1alpha1.AppliedResource) (*unstructured.Unstructured, 
 	gvk := schema.FromAPIVersionAndKind(a.APIVersion, a.Kind)
 	// Verify if the GroupVersionKind (GVK) is properly parsed
 	if gvk.Group == "" && gvk.Version == "" {
+		return nil, fmt.Errorf("failed to parse GroupVersionKind from APIVersion and Kind: %v", gvk)
+	}
+	if gvk.Kind == "" {
 		return nil, fmt.Errorf("failed to parse GroupVersionKind from APIVersion and Kind: %v", gvk)
 	}
 	// Ensure the resource name is not empty
@@ -50,10 +59,29 @@ func ToUnstructured(a komv1alpha1.AppliedResource) (*unstructured.Unstructured, 
 }
 
 func ToAppliedResource(u unstructured.Unstructured) (*komv1alpha1.AppliedResource, error) {
-	a := &komv1alpha1.AppliedResource{}
-	a.Name = u.GetName()
-	a.Namespace = u.GetNamespace()
-	a.Kind = u.GetObjectKind().GroupVersionKind().Kind
-	a.APIVersion = u.GetAPIVersion()
+	name := u.GetName()
+	namespace := u.GetNamespace()
+	kind := u.GetObjectKind().GroupVersionKind().Kind
+	apiVersion := u.GetAPIVersion()
+
+	if name == "" {
+		return nil, errors.New("missing required field: name")
+	}
+	if namespace == "" {
+		return nil, errors.New("missing required field: namespace")
+	}
+	if kind == "" {
+		return nil, errors.New("missing required field: kind")
+	}
+	if apiVersion == "" {
+		return nil, errors.New("missing required field: apiVersion")
+	}
+
+	a := &komv1alpha1.AppliedResource{
+		Name:       name,
+		Namespace:  namespace,
+		Kind:       kind,
+		APIVersion: apiVersion,
+	}
 	return a, nil
 }
