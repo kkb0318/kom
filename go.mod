@@ -1,6 +1,8 @@
 module github.com/kkb0318/kom
 
-go 1.20
+go 1.21
+
+toolchain go1.21.6
 
 require (
 	github.com/fluxcd/helm-controller/api v0.37.2
