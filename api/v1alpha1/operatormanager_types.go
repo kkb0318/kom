@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"slices"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -62,8 +64,9 @@ const (
 // OperatorManagerStatus defines the observed state of OperatorManager
 type OperatorManagerStatus struct {
 	// Inventory of applied resources
-	AppliedResources []AppliedResource `json:"appliedResources,omitempty"`
+	AppliedResources AppliedResourceList `json:"appliedResources,omitempty"`
 }
+type AppliedResourceList []AppliedResource
 
 // Unique identifier for the resource,  "namespace-name-kind-group-apiversion"
 type AppliedResource struct {
@@ -75,6 +78,24 @@ type AppliedResource struct {
 	Name string `json:"name"`
 	// Namespace of the resource, if applicable
 	Namespace string `json:"namespace,omitempty"`
+}
+
+func (a AppliedResource) Equal(b AppliedResource) bool {
+	return a.Name == b.Name &&
+		a.Namespace == b.Namespace &&
+		a.Kind == b.Kind &&
+		a.APIVersion == b.APIVersion
+}
+
+// Diff returns the resourceList that exist in listA, but not in listB (A - B).
+func (listA AppliedResourceList) Diff(listB AppliedResourceList) AppliedResourceList {
+	diff := append(AppliedResourceList{}, listA...)
+	diff = slices.DeleteFunc(diff, func(a AppliedResource) bool {
+		return slices.ContainsFunc(listB, func(b AppliedResource) bool {
+			return b.Equal(a)
+		})
+	})
+	return diff
 }
 
 //+kubebuilder:object:root=true
