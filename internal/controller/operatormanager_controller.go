@@ -109,17 +109,28 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alpha1.OperatorManager, handler komk8s.Handler) error {
 	log := ctrllog.FromContext(ctx)
 	rm := factory.NewResourceManager(*obj)
+	beforeResources := obj.Status.AppliedResources.DeepCopy()
 
 	appliedResources, err := handler.ApplyAll(ctx, rm)
-	// TODO: when partial resources applied, status not updated
 	if err != nil {
 		log.Error(err, "server-side apply failed")
 		return err
 	}
+	diff, err := komstatus.Diff(beforeResources, appliedResources)
+	if err != nil {
+		return err
+	}
+	if len(diff) != 0 {
+		log.Info("garbage collect")
+		opts := komk8s.DeleteOptions{
+			DeletionPropagation: metav1.DeletePropagationBackground,
+		}
+		err = handler.DeleteAll(ctx, diff, opts)
+		if err != nil {
+			return err
+		}
+	}
 	obj.Status.AppliedResources = appliedResources
-	// TODO: delete stale resources
-	// 1. diff old and new appliedResources
-	// 2. delete diff resources
 	log.Info("server-side apply completed")
 	return nil
 }

@@ -14,7 +14,7 @@ func TestStatus_Diff(t *testing.T) {
 		oldList      komv1alpha1.AppliedResourceList
 		newList      komv1alpha1.AppliedResourceList
 		expectedDiff []*unstructured.Unstructured
-		expectErr  bool
+		expectErr    bool
 	}{
 		{
 			name: "Diff with one removed resource",
@@ -127,144 +127,143 @@ func TestStatus_ToListUnstructured(t *testing.T) {
 	}
 }
 
-
 func TestStatus_ToUnstructured(t *testing.T) {
-    testCases := []struct {
-        name string 
-        resource    komv1alpha1.AppliedResource
-        expected    *unstructured.Unstructured
-        expectErr bool 
-    }{
-        {
-            name: "Convert a valid resource to unstructured",
-            resource:    komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "Kind1", APIVersion: "v1"},
-            expected: &unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "metadata":   map[string]interface{}{"name": "name1", "namespace": "ns1"},
-                    "apiVersion": "v1", "kind": "Kind1",
-                },
-            },
-        },
-        {
-            name: "Fail to convert resource with missing name",
-            resource:    komv1alpha1.AppliedResource{Name: "", Namespace: "ns1", Kind: "Kind1", APIVersion: "v1"},
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert resource with missing namespace",
-            resource:    komv1alpha1.AppliedResource{Name: "name1", Namespace: "", Kind: "Kind1", APIVersion: "v1"},
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert resource with missing kind",
-            resource:    komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "", APIVersion: "v1"},
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert resource with missing API version",
-            resource:    komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "Kind1", APIVersion: ""},
-            expectErr: true,
-        },
-    }
-    for _, tc := range testCases {
-        t.Run(tc.name, func(t *testing.T) {
-            result, err := ToUnstructured(tc.resource) 
-            if tc.expectErr {
-                assert.Error(t, err)
-            } else {
-                assert.NoError(t, err)
-                assert.Equal(t, tc.expected, result)
-            }
-        })
-    }
+	testCases := []struct {
+		name      string
+		resource  komv1alpha1.AppliedResource
+		expected  *unstructured.Unstructured
+		expectErr bool
+	}{
+		{
+			name:     "Convert a valid resource to unstructured",
+			resource: komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "Kind1", APIVersion: "v1"},
+			expected: &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"metadata":   map[string]interface{}{"name": "name1", "namespace": "ns1"},
+					"apiVersion": "v1", "kind": "Kind1",
+				},
+			},
+		},
+		{
+			name:      "Fail to convert resource with missing name",
+			resource:  komv1alpha1.AppliedResource{Name: "", Namespace: "ns1", Kind: "Kind1", APIVersion: "v1"},
+			expectErr: true,
+		},
+		{
+			name:      "Fail to convert resource with missing namespace",
+			resource:  komv1alpha1.AppliedResource{Name: "name1", Namespace: "", Kind: "Kind1", APIVersion: "v1"},
+			expectErr: true,
+		},
+		{
+			name:      "Fail to convert resource with missing kind",
+			resource:  komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "", APIVersion: "v1"},
+			expectErr: true,
+		},
+		{
+			name:      "Fail to convert resource with missing API version",
+			resource:  komv1alpha1.AppliedResource{Name: "name1", Namespace: "ns1", Kind: "Kind1", APIVersion: ""},
+			expectErr: true,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := ToUnstructured(tc.resource)
+			if tc.expectErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expected, result)
+			}
+		})
+	}
 }
 
 func TestStatus_ToAppliedResource(t *testing.T) {
-    testCases := []struct {
-        name  string
-        input        unstructured.Unstructured
-        expected     *komv1alpha1.AppliedResource
-        expectErr  bool
-    }{
-        {
-            name: "Convert a fully populated unstructured object",
-            input: unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "apiVersion": "v1",
-                    "kind":       "Kind1",
-                    "metadata": map[string]interface{}{
-                        "name":      "name1",
-                        "namespace": "ns1",
-                    },
-                },
-            },
-            expected: &komv1alpha1.AppliedResource{
-                Name:       "name1",
-                Namespace:  "ns1",
-                Kind:       "Kind1",
-                APIVersion: "v1",
-            },
-            expectErr: false,
-        },
-        {
-            name: "Fail to convert due to missing name",
-            input: unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "apiVersion": "v1",
-                    "kind":       "Kind1",
-                    "metadata":   map[string]interface{}{"namespace": "ns1"},
-                },
-            },
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert due to missing namespace",
-            input: unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "apiVersion": "v1",
-                    "kind":       "Kind1",
-                    "metadata":   map[string]interface{}{"name": "name1"},
-                },
-            },
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert due to missing kind",
-            input: unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "apiVersion": "v1",
-                    "metadata": map[string]interface{}{
-                        "name":      "name1",
-                        "namespace": "ns1",
-                    },
-                },
-            },
-            expectErr: true,
-        },
-        {
-            name: "Fail to convert due to missing apiVersion",
-            input: unstructured.Unstructured{
-                Object: map[string]interface{}{
-                    "kind": "Kind1",
-                    "metadata": map[string]interface{}{
-                        "name":      "name1",
-                        "namespace": "ns1",
-                    },
-                },
-            },
-            expectErr: true,
-        },
-    }
+	testCases := []struct {
+		name      string
+		input     unstructured.Unstructured
+		expected  *komv1alpha1.AppliedResource
+		expectErr bool
+	}{
+		{
+			name: "Convert a fully populated unstructured object",
+			input: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"kind":       "Kind1",
+					"metadata": map[string]interface{}{
+						"name":      "name1",
+						"namespace": "ns1",
+					},
+				},
+			},
+			expected: &komv1alpha1.AppliedResource{
+				Name:       "name1",
+				Namespace:  "ns1",
+				Kind:       "Kind1",
+				APIVersion: "v1",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Fail to convert due to missing name",
+			input: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"kind":       "Kind1",
+					"metadata":   map[string]interface{}{"namespace": "ns1"},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "Fail to convert due to missing namespace",
+			input: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"kind":       "Kind1",
+					"metadata":   map[string]interface{}{"name": "name1"},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "Fail to convert due to missing kind",
+			input: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"metadata": map[string]interface{}{
+						"name":      "name1",
+						"namespace": "ns1",
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "Fail to convert due to missing apiVersion",
+			input: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"kind": "Kind1",
+					"metadata": map[string]interface{}{
+						"name":      "name1",
+						"namespace": "ns1",
+					},
+				},
+			},
+			expectErr: true,
+		},
+	}
 
-    for _, tc := range testCases {
-        t.Run(tc.name, func(t *testing.T) {
-            result, err := ToAppliedResource(tc.input)
-            if tc.expectErr {
-                assert.Error(t, err)
-            } else {
-                assert.NoError(t, err)
-                assert.Equal(t, tc.expected, result)
-            }
-        })
-    }
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := ToAppliedResource(tc.input)
+			if tc.expectErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expected, result)
+			}
+		})
+	}
 }

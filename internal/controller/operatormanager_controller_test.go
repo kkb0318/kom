@@ -27,11 +27,19 @@ var _ = Describe("OperatorManager controller", func() {
 						{
 							Name: "repo1",
 							Url:  "https://helm.github.io/examples",
-							// Url: "https://stefanprodan.github.io/podinfo",
 							Charts: []komv1alpha1.Chart{
 								{
-									Name: "hello-world",
-									// Name: "podinfo",
+									Name:    "hello-world",
+									Version: "x.x.x",
+								},
+							},
+						},
+						{
+							Name: "repo2",
+							Url:  "https://stefanprodan.github.io/podinfo",
+							Charts: []komv1alpha1.Chart{
+								{
+									Name:    "podinfo",
 									Version: "x.x.x",
 								},
 							},
@@ -41,15 +49,29 @@ var _ = Describe("OperatorManager controller", func() {
 			}
 			typeNamespaceName := types.NamespacedName{Name: komName, Namespace: testNamespace}
 
-			expected := expected{
-				source: types.NamespacedName{
-					Name:      "repo1",
-					Namespace: "kom-system",
-				},
-				charts: []types.NamespacedName{
-					{
-						Name:      "hello-world",
+			expectedResources := []expected{
+				{
+					source: types.NamespacedName{
+						Name:      "repo1",
 						Namespace: "kom-system",
+					},
+					charts: []types.NamespacedName{
+						{
+							Name:      "hello-world",
+							Namespace: "kom-system",
+						},
+					},
+				},
+				{
+					source: types.NamespacedName{
+						Name:      "repo2",
+						Namespace: "kom-system",
+					},
+					charts: []types.NamespacedName{
+						{
+							Name:      "podinfo",
+							Namespace: "kom-system",
+						},
 					},
 				},
 			}
@@ -79,16 +101,53 @@ var _ = Describe("OperatorManager controller", func() {
 			Expect(err).To(Not(HaveOccurred()))
 
 			By("Checking if Resources were successfully created in the reconciliation")
+			for _, expected := range expectedResources {
+				Eventually(func() error {
+					found := &sourcev1.HelmRepository{}
+					return k8sClient.Get(ctx, expected.source, found)
+				}, timeout).Should(Succeed())
+				for _, fetcher := range expected.charts {
+					Eventually(func() error {
+						found := &helmv1.HelmRelease{}
+						return k8sClient.Get(ctx, fetcher, found)
+					}, timeout).Should(Succeed())
+				}
+			}
+
+			By("checikng garbage collect of partially deletion")
+			k8sClient.Get(ctx, typeNamespaceName, kom)
+			Eventually(func() error {
+				// delete resource[1]
+				kom.Spec.Resource.Helm = []komv1alpha1.Helm{kom.Spec.Resource.Helm[0]}
+				return k8sClient.Update(ctx, kom)
+			}, timeout).Should(Succeed())
+			_, err = komReconciler.Reconcile(ctx, reconcile.Request{
+				NamespacedName: typeNamespaceName,
+			})
+			Expect(err).To(Not(HaveOccurred()))
+			// resource[0] exists
 			Eventually(func() error {
 				found := &sourcev1.HelmRepository{}
-				return k8sClient.Get(ctx, expected.source, found)
+				return k8sClient.Get(ctx, expectedResources[0].source, found)
 			}, timeout).Should(Succeed())
-			for _, fetcher := range expected.charts {
+			for _, fetcher := range expectedResources[0].charts {
 				Eventually(func() error {
 					found := &helmv1.HelmRelease{}
 					return k8sClient.Get(ctx, fetcher, found)
 				}, timeout).Should(Succeed())
 			}
+			// resource[1] does not exist
+			Eventually(func() error {
+				found := &sourcev1.HelmRepository{}
+				return k8sClient.Get(ctx, expectedResources[1].source, found)
+			}, timeout).Should(Not(Succeed()))
+			for _, fetcher := range expectedResources[1].charts {
+				Eventually(func() error {
+					found := &helmv1.HelmRelease{}
+					return k8sClient.Get(ctx, fetcher, found)
+				}, timeout).Should(Not(Succeed()))
+			}
+
 			By("removing the custom resource for the Kind")
 			Eventually(func() error {
 				return k8sClient.Delete(ctx, kom)
@@ -103,15 +162,17 @@ var _ = Describe("OperatorManager controller", func() {
 			}, timeout).Should(Not(Succeed()))
 
 			By("Checking if Resources were successfully deleted in the reconciliation")
-			Eventually(func() error {
-				found := &sourcev1.HelmRepository{}
-				return k8sClient.Get(ctx, expected.source, found)
-			}, timeout).Should(Not(Succeed()))
-			for _, fetcher := range expected.charts {
+			for _, expected := range expectedResources {
 				Eventually(func() error {
-					found := &helmv1.HelmRelease{}
-					return k8sClient.Get(ctx, fetcher, found)
+					found := &sourcev1.HelmRepository{}
+					return k8sClient.Get(ctx, expected.source, found)
 				}, timeout).Should(Not(Succeed()))
+				for _, fetcher := range expected.charts {
+					Eventually(func() error {
+						found := &helmv1.HelmRelease{}
+						return k8sClient.Get(ctx, fetcher, found)
+					}, timeout).Should(Not(Succeed()))
+				}
 			}
 		})
 	})
