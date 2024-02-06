@@ -28,8 +28,10 @@ import (
 	. "github.com/onsi/gomega"
 
 	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
-	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
-	komkkbjpv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1"
+	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
+	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -78,12 +80,16 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	err = komkkbjpv1alpha1.AddToScheme(scheme.Scheme)
+	err = komv1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 	// for flux
-	err = sourcev1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	err = sourcev1beta2.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 	err = helmv1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+	err = sourcev1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+	err = kustomizev1.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	//+kubebuilder:scaffold:scheme
@@ -114,11 +120,11 @@ var _ = AfterSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 })
 
-func createKom(name string) *komkkbjpv1alpha1.OperatorManager {
-	return &komkkbjpv1alpha1.OperatorManager{
+func createKom(name string) *komv1alpha1.OperatorManager {
+	return &komv1alpha1.OperatorManager{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       komkkbjpv1alpha1.OperatorManagerKind,
-			APIVersion: komkkbjpv1alpha1.GroupVersion.String(),
+			Kind:       komv1alpha1.OperatorManagerKind,
+			APIVersion: komv1alpha1.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -133,11 +139,11 @@ func createNamespace(ns string) *corev1.Namespace {
 	}
 }
 
-func createHelmRepository(name string) *sourcev1.HelmRepository {
-	return &sourcev1.HelmRepository{
+func createHelmRepository(name string) *sourcev1beta2.HelmRepository {
+	return &sourcev1beta2.HelmRepository{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       sourcev1.HelmRepositoryKind,
-			APIVersion: sourcev1.GroupVersion.String(),
+			Kind:       sourcev1beta2.HelmRepositoryKind,
+			APIVersion: sourcev1beta2.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,

@@ -39,6 +39,26 @@ spec:
                 type: boolean
               resource:
                 properties:
+                  git:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                        path:
+                          type: string
+                        reference:
+                          properties:
+                            type:
+                              type: string
+                            value:
+                              type: string
+                          type: object
+                        url:
+                          type: string
+                      type: object
+                    type: array
                   helm:
                     items:
                       properties:
@@ -47,9 +67,8 @@ spec:
                             properties:
                               name:
                                 type: string
-                              namespace:
-                                type: string
                               version:
+                                description: Namespace string `json:"namespace,omitempty"`
                                 type: string
                             type: object
                           type: array

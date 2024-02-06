@@ -6,7 +6,6 @@ import (
 
 type ResourceManager interface {
 	Helm() ([]Resource, error)
-	Oci() ([]Resource, error)
 	Git() ([]Resource, error)
 }
 

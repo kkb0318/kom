@@ -28,10 +28,17 @@ func NewHandler(c client.Client, owner Owner) (*Handler, error) {
 
 func (h Handler) ApplyAll(ctx context.Context, r komtool.ResourceManager) ([]komv1alpha1.AppliedResource, error) {
 	var appliedResources []komv1alpha1.AppliedResource
-	resources, err := r.Helm()
+	resources := make([]komtool.Resource, 0)
+	helm, err := r.Helm()
 	if err != nil {
 		return nil, err
 	}
+	git, err := r.Git()
+	if err != nil {
+		return nil, err
+	}
+	resources = append(resources, helm...)
+	resources = append(resources, git...)
 	for _, resource := range resources {
 		repo := resource.Repository()
 		applied, err := h.Apply(ctx, repo)

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
-	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
+	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
+	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	"github.com/stretchr/testify/assert"
@@ -28,16 +28,15 @@ func TestFluxHelm_New(t *testing.T) {
 					Url:       "https://example.com",
 					Charts: []komv1alpha1.Chart{
 						{
-							Name:      "chart1",
-							Namespace: "chart-ns1",
-							Version:   "x.x.x",
+							Name:    "chart1",
+							Version: "x.x.x",
 						},
 					},
 				},
 			},
 			expected: []komtool.Resource{
 				&FluxHelm{
-					source: &sourcev1.HelmRepository{
+					source: &sourcev1beta2.HelmRepository{
 						ObjectMeta: v1.ObjectMeta{
 							Name:      "repo1",
 							Namespace: "repo-ns1",
@@ -46,28 +45,28 @@ func TestFluxHelm_New(t *testing.T) {
 							APIVersion: "source.toolkit.fluxcd.io/v1beta2",
 							Kind:       "HelmRepository",
 						},
-						Spec: sourcev1.HelmRepositorySpec{
+						Spec: sourcev1beta2.HelmRepositorySpec{
 							Type:     "default",
 							Interval: v1.Duration{Duration: time.Minute},
 							URL:      "https://example.com",
 						},
 					},
-					helm: []*helmv1.HelmRelease{
+					helm: []*helmv2beta2.HelmRelease{
 						{
 							ObjectMeta: v1.ObjectMeta{
 								Name:      "chart1",
-								Namespace: "chart-ns1",
+								Namespace: "repo-ns1",
 							},
 							TypeMeta: v1.TypeMeta{
 								APIVersion: "helm.toolkit.fluxcd.io/v2beta2",
 								Kind:       "HelmRelease",
 							},
-							Spec: helmv1.HelmReleaseSpec{
-								Chart: helmv1.HelmChartTemplate{
-									Spec: helmv1.HelmChartTemplateSpec{
+							Spec: helmv2beta2.HelmReleaseSpec{
+								Chart: helmv2beta2.HelmChartTemplate{
+									Spec: helmv2beta2.HelmChartTemplateSpec{
 										Chart:   "chart1",
 										Version: "x.x.x",
-										SourceRef: helmv1.CrossNamespaceObjectReference{
+										SourceRef: helmv2beta2.CrossNamespaceObjectReference{
 											Kind:      "HelmRepository",
 											Name:      "repo1",
 											Namespace: "repo-ns1",

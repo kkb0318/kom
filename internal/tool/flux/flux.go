@@ -21,10 +21,10 @@ func (f *Flux) Helm() ([]komtool.Resource, error) {
 	return helmResources, nil
 }
 
-func (f *Flux) Oci() ([]komtool.Resource, error) {
-	return nil, nil
-}
-
 func (f *Flux) Git() ([]komtool.Resource, error) {
-	return nil, nil
+	gitResources, err := NewFluxGitList(f.resource.Git)
+	if err != nil {
+		return nil, err
+	}
+	return gitResources, nil
 }

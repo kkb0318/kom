@@ -41,6 +41,7 @@ type OperatorManagerSpec struct {
 
 type Resource struct {
 	Helm []Helm `json:"helm,omitempty"`
+	Git  []Git  `json:"git,omitempty"`
 }
 
 type Helm struct {
@@ -49,11 +50,34 @@ type Helm struct {
 	Url       string  `json:"url,omitempty"`
 	Charts    []Chart `json:"charts,omitempty"`
 }
+
 type Chart struct {
-	Name      string `json:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	Version   string `json:"version,omitempty"`
+	Name string `json:"name,omitempty"`
+	// Namespace string `json:"namespace,omitempty"`
+	Version string `json:"version,omitempty"`
 }
+
+type Git struct {
+	Name      string       `json:"name,omitempty"`
+	Namespace string       `json:"namespace,omitempty"`
+	Url       string       `json:"url,omitempty"`
+	Path      string       `json:"path,omitempty"`
+	Reference GitReference `json:"reference,omitempty"`
+}
+
+type GitReference struct {
+	Type  GitReferenceType `json:"type,omitempty"`
+	Value string           `json:"value,omitempty"`
+}
+
+type GitReferenceType string
+
+const (
+	GitBranch GitReferenceType = "branch"
+	GitSemver GitReferenceType = "semver"
+	GitTag    GitReferenceType = "tag"
+)
+
 type ToolType string
 
 const (

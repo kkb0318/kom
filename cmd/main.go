@@ -33,7 +33,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	komkkbjpv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
+	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	"github.com/kkb0318/kom/internal/controller"
 	//+kubebuilder:scaffold:imports
 )
@@ -46,7 +46,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(komkkbjpv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(komv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

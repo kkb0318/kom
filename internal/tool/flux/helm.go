@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
-	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
+	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
+	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,8 +13,8 @@ import (
 )
 
 type FluxHelm struct {
-	source *sourcev1.HelmRepository
-	helm   []*helmv1.HelmRelease
+	source *sourcev1beta2.HelmRepository
+	helm   []*helmv2beta2.HelmRelease
 }
 
 type HelmValues struct {
@@ -62,29 +62,24 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	}
 	repoUrl := obj.Url
 	charts := obj.Charts
-	helmrepo := &sourcev1.HelmRepository{
+	helmrepo := &sourcev1beta2.HelmRepository{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      repoName,
 			Namespace: namespace,
 		},
 		TypeMeta: v1.TypeMeta{
-			APIVersion: sourcev1.GroupVersion.String(),
-			Kind:       sourcev1.HelmRepositoryKind,
+			APIVersion: sourcev1beta2.GroupVersion.String(),
+			Kind:       sourcev1beta2.HelmRepositoryKind,
 		},
-		Spec: sourcev1.HelmRepositorySpec{
+		Spec: sourcev1beta2.HelmRepositorySpec{
 			Type:     RepositoryType(repoUrl),
 			Interval: v1.Duration{Duration: time.Minute},
 			URL:      repoUrl,
 		},
 	}
-	hrs := make([]*helmv1.HelmRelease, len(charts))
+	hrs := make([]*helmv2beta2.HelmRelease, len(charts))
 	for i, chart := range charts {
-		var chartNs string
-		if chart.Namespace == "" {
-			chartNs = namespace
-		} else {
-			chartNs = chart.Namespace
-		}
+		chartNs := namespace
 		// values := HelmValues{
 		// 	FullnameOverride: fmt.Sprintf("%s-controller", chart.Name),
 		// }
@@ -92,22 +87,22 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 		// if err != nil {
 		// 	return nil, err
 		// }
-		hr := &helmv1.HelmRelease{
+		hr := &helmv2beta2.HelmRelease{
 			ObjectMeta: v1.ObjectMeta{
 				Name:      chart.Name,
 				Namespace: chartNs,
 			},
 			TypeMeta: v1.TypeMeta{
-				APIVersion: helmv1.GroupVersion.String(),
-				Kind:       helmv1.HelmReleaseKind,
+				APIVersion: helmv2beta2.GroupVersion.String(),
+				Kind:       helmv2beta2.HelmReleaseKind,
 			},
-			Spec: helmv1.HelmReleaseSpec{
-				Chart: helmv1.HelmChartTemplate{
-					Spec: helmv1.HelmChartTemplateSpec{
+			Spec: helmv2beta2.HelmReleaseSpec{
+				Chart: helmv2beta2.HelmChartTemplate{
+					Spec: helmv2beta2.HelmChartTemplateSpec{
 						Chart:   chart.Name,
 						Version: chart.Version,
-						SourceRef: helmv1.CrossNamespaceObjectReference{
-							Kind:      sourcev1.HelmRepositoryKind,
+						SourceRef: helmv2beta2.CrossNamespaceObjectReference{
+							Kind:      sourcev1beta2.HelmRepositoryKind,
 							Name:      repoName,
 							Namespace: namespace,
 						},
