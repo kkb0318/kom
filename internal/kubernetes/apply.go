@@ -14,15 +14,17 @@ import (
 )
 
 type Handler struct {
-	client client.Client
-	owner  Owner
+	cleanup bool
+	client  client.Client
+	owner   Owner
 }
 
 // NewHelper returns an initialized Helper.
-func NewHandler(c client.Client, owner Owner) (*Handler, error) {
+func NewHandler(c client.Client, owner Owner, cleanup bool) (*Handler, error) {
 	return &Handler{
-		client: c,
-		owner:  owner,
+		cleanup: cleanup,
+		client:  c,
+		owner:   owner,
 	}, nil
 }
 

@@ -25,6 +25,9 @@ type DeleteOptions struct {
 }
 
 func (h *Handler) DeleteAll(ctx context.Context, resources []*unstructured.Unstructured, opts DeleteOptions) error {
+	if !h.cleanup {
+		return nil
+	}
 	for _, r := range resources {
 		err := h.Delete(ctx, r, opts)
 		if err != nil {
@@ -36,6 +39,9 @@ func (h *Handler) DeleteAll(ctx context.Context, resources []*unstructured.Unstr
 
 // Delete deletes the given object (not found errors are ignored).
 func (h *Handler) Delete(ctx context.Context, object *unstructured.Unstructured, opts DeleteOptions) error {
+	if !h.cleanup {
+		return nil
+	}
 	existingObject := &unstructured.Unstructured{}
 	existingObject.SetGroupVersionKind(object.GroupVersionKind())
 	err := h.client.Get(ctx, client.ObjectKeyFromObject(object), existingObject)

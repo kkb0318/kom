@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -8,22 +10,18 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-type expected struct {
-	source types.NamespacedName
-	charts []types.NamespacedName
-}
-
 var _ = Describe("OperatorManager controller", func() {
 	Context("OperatorManager controller test", func() {
-		It("should successfully reconcile a custom resource for kom", func() {
-			komName := "test-kom"
+		It("no garbage collect test. cleanup: false", func() {
+			nameSuffix := "-no-cleanup"
+			komName := fmt.Sprintf("test-kom%s", nameSuffix)
 			kom := createKom(komName)
 			kom.Spec = komv1alpha1.OperatorManagerSpec{
-				Cleanup: true,
+				Cleanup: false,
 				Resource: komv1alpha1.Resource{
 					Helm: []komv1alpha1.Helm{
 						{
-							Name: "helmrepo1",
+							Name: fmt.Sprintf("helmrepo1%s", nameSuffix),
 							Url:  "https://helm.github.io/examples",
 							Charts: []komv1alpha1.Chart{
 								{
@@ -33,7 +31,7 @@ var _ = Describe("OperatorManager controller", func() {
 							},
 						},
 						{
-							Name: "helmrepo2",
+							Name: fmt.Sprintf("helmrepo2%s", nameSuffix),
 							Url:  "https://stefanprodan.github.io/podinfo",
 							Charts: []komv1alpha1.Chart{
 								{
@@ -45,7 +43,7 @@ var _ = Describe("OperatorManager controller", func() {
 					},
 					Git: []komv1alpha1.Git{
 						{
-							Name: "gitrepo1",
+							Name: fmt.Sprintf("gitrepo1%s", nameSuffix),
 							Url:  "https://github.com/operator-framework/operator-sdk",
 							Path: "testdata/helm/memcached-operator/config/default",
 							Reference: komv1alpha1.GitReference{
@@ -61,7 +59,7 @@ var _ = Describe("OperatorManager controller", func() {
 			expectedHelmResources := []expected{
 				{
 					source: types.NamespacedName{
-						Name:      "helmrepo1",
+						Name:      fmt.Sprintf("helmrepo1%s", nameSuffix),
 						Namespace: "kom-system",
 					},
 					charts: []types.NamespacedName{
@@ -73,7 +71,7 @@ var _ = Describe("OperatorManager controller", func() {
 				},
 				{
 					source: types.NamespacedName{
-						Name:      "helmrepo2",
+						Name:      fmt.Sprintf("helmrepo2%s", nameSuffix),
 						Namespace: "kom-system",
 					},
 					charts: []types.NamespacedName{
@@ -88,12 +86,12 @@ var _ = Describe("OperatorManager controller", func() {
 			expectedGitResources := []expected{
 				{
 					source: types.NamespacedName{
-						Name:      "gitrepo1",
+						Name:      fmt.Sprintf("gitrepo1%s", nameSuffix),
 						Namespace: "kom-system",
 					},
 					charts: []types.NamespacedName{
 						{
-							Name:      "gitrepo1",
+							Name:      fmt.Sprintf("gitrepo1%s", nameSuffix),
 							Namespace: "kom-system",
 						},
 					},
@@ -138,7 +136,7 @@ var _ = Describe("OperatorManager controller", func() {
 				}
 			}
 
-			By("Checking garbage collect of partially deletion")
+			By("Checking no garbage collect")
 			k8sClient.Get(ctx, typeNamespaceName, kom)
 			Eventually(func() error {
 				// delete resource[1]
@@ -149,15 +147,17 @@ var _ = Describe("OperatorManager controller", func() {
 				NamespacedName: typeNamespaceName,
 			})
 			Expect(err).To(Not(HaveOccurred()))
-			// resource[0] exists
-			checkExist(expectedHelmResources[0].source, helmRepo)
-			for _, fetcher := range expectedHelmResources[0].charts {
-				checkExist(fetcher, helmRelease)
+			for _, expected := range expectedHelmResources {
+				checkExist(expected.source, helmRepo)
+				for _, fetcher := range expected.charts {
+					checkExist(fetcher, helmRelease)
+				}
 			}
-			// resource[1] does not exist
-			checkNoExist(expectedHelmResources[1].source, helmRepo)
-			for _, fetcher := range expectedHelmResources[1].charts {
-				checkNoExist(fetcher, helmRelease)
+			for _, expected := range expectedGitResources {
+				checkExist(expected.source, gitRepo)
+				for _, fetcher := range expected.charts {
+					checkExist(fetcher, kustomization)
+				}
 			}
 
 			By("removing the custom resource for the Kind")
@@ -170,17 +170,17 @@ var _ = Describe("OperatorManager controller", func() {
 			Expect(err).To(Not(HaveOccurred()))
 			checkNoExist(typeNamespaceName, operatorManager)
 
-			By("Checking if Resources were successfully deleted in the reconciliation")
+			By("Checking no garbage collect")
 			for _, expected := range expectedHelmResources {
-				checkNoExist(expected.source, helmRepo)
+				checkExist(expected.source, helmRepo)
 				for _, fetcher := range expected.charts {
-					checkNoExist(fetcher, helmRelease)
+					checkExist(fetcher, helmRelease)
 				}
 			}
 			for _, expected := range expectedGitResources {
-				checkNoExist(expected.source, gitRepo)
+				checkExist(expected.source, gitRepo)
 				for _, fetcher := range expected.charts {
-					checkNoExist(fetcher, kustomization)
+					checkExist(fetcher, kustomization)
 				}
 			}
 		})

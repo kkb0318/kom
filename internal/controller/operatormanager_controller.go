@@ -67,12 +67,11 @@ func (r *OperatorManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.15.0/pkg/reconcile
 func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, retErr error) {
 	log := ctrllog.FromContext(ctx)
-	log.Info("start reconciling")
 	obj := &komv1alpha1.OperatorManager{}
 	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-	handler, err := komk8s.NewHandler(r.Client, komk8s.Owner{Field: "kom"})
+	handler, err := komk8s.NewHandler(r.Client, komk8s.Owner{Field: "kom"}, obj.Spec.Cleanup)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -86,7 +85,6 @@ func (r *OperatorManagerReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		}
 	}()
 
-	// Apply Resources to pull helm, oci, git
 	if !controllerutil.ContainsFinalizer(obj, komFinalizer) {
 		controllerutil.AddFinalizer(obj, komFinalizer)
 		if err := r.Update(ctx, obj); err != nil {

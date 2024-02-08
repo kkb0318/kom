@@ -34,6 +34,7 @@ import (
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -163,4 +164,39 @@ func createHelmRelease(name string) *helmv1.HelmRelease {
 			Namespace: testNamespace,
 		},
 	}
+}
+
+func checkExist(expected types.NamespacedName, newFunc func() client.Object) {
+	Eventually(func() error {
+		found := newFunc()
+		return k8sClient.Get(ctx, expected, found)
+	}, timeout).Should(Succeed())
+}
+
+func checkNoExist(expected types.NamespacedName, newFunc func() client.Object) {
+	Eventually(func() error {
+		found := newFunc()
+		return k8sClient.Get(ctx, expected, found)
+	}, timeout).Should(Not(Succeed()))
+}
+
+// -----used for assertion-----
+func helmRepo() client.Object {
+	return &sourcev1beta2.HelmRepository{}
+}
+
+func helmRelease() client.Object {
+	return &helmv1.HelmRelease{}
+}
+
+func gitRepo() client.Object {
+	return &sourcev1.GitRepository{}
+}
+
+func kustomization() client.Object {
+	return &kustomizev1.Kustomization{}
+}
+
+func operatorManager() client.Object {
+	return &komv1alpha1.OperatorManager{}
 }

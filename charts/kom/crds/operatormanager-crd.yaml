@@ -33,11 +33,31 @@ spec:
           spec:
             description: OperatorManagerSpec defines the desired state of OperatorManager
             properties:
-              prune:
-                description: Prune enables garbage collection.
+              cleanup:
+                description: Cleanup enables garbage collection.
                 type: boolean
               resource:
                 properties:
+                  git:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                        path:
+                          type: string
+                        reference:
+                          properties:
+                            type:
+                              type: string
+                            value:
+                              type: string
+                          type: object
+                        url:
+                          type: string
+                      type: object
+                    type: array
                   helm:
                     items:
                       properties:
@@ -46,9 +66,8 @@ spec:
                             properties:
                               name:
                                 type: string
-                              namespace:
-                                type: string
                               version:
+                                description: Namespace string `json:"namespace,omitempty"`
                                 type: string
                             type: object
                           type: array
@@ -64,11 +83,36 @@ spec:
               tool:
                 type: string
             required:
-            - prune
+            - cleanup
             - resource
             type: object
           status:
             description: OperatorManagerStatus defines the observed state of OperatorManager
+            properties:
+              appliedResources:
+                description: Inventory of applied resources
+                items:
+                  description: Unique identifier for the resource,  "namespace-name-kind-group-apiversion"
+                  properties:
+                    apiVersion:
+                      description: APIVersion of the resource, e.g., "apps/v1"
+                      type: string
+                    kind:
+                      description: Kind of the Kubernetes resource, e.g., Deployment,
+                        Service, etc.
+                      type: string
+                    name:
+                      description: Name of the resource
+                      type: string
+                    namespace:
+                      description: Namespace of the resource, if applicable
+                      type: string
+                  required:
+                  - apiVersion
+                  - kind
+                  - name
+                  type: object
+                type: array
             type: object
         type: object
     served: true

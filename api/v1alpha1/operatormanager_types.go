@@ -30,9 +30,9 @@ const (
 
 // OperatorManagerSpec defines the desired state of OperatorManager
 type OperatorManagerSpec struct {
-	// Prune enables garbage collection.
+	// Cleanup enables garbage collection.
 	// +required
-	Prune bool `json:"prune"`
+	Cleanup bool `json:"cleanup"`
 
 	Tool ToolType `json:"tool,omitempty"`
 	// +required

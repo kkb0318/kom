@@ -34,8 +34,8 @@ spec:
           spec:
             description: OperatorManagerSpec defines the desired state of OperatorManager
             properties:
-              prune:
-                description: Prune enables garbage collection.
+              cleanup:
+                description: Cleanup enables garbage collection.
                 type: boolean
               resource:
                 properties:
@@ -84,7 +84,7 @@ spec:
               tool:
                 type: string
             required:
-            - prune
+            - cleanup
             - resource
             type: object
           status:

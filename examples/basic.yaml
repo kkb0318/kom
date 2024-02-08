@@ -4,7 +4,7 @@ metadata:
   name: kom
   namespace: kom-system
 spec:
-  prune: true
+  cleanup: true
   resource:
     helm:
       - name: repo1
