@@ -21,8 +21,8 @@ type HelmValues struct {
 	FullnameOverride string
 }
 
-func (f *FluxHelm) Repository() client.Object {
-	return f.source
+func (f *FluxHelm) Repositories() []client.Object {
+	return []client.Object{f.source}
 }
 
 func (f *FluxHelm) Charts() []client.Object {

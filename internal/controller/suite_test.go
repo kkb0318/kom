@@ -92,6 +92,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	err = kustomizev1.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
+	// for argocd
 
 	//+kubebuilder:scaffold:scheme
 

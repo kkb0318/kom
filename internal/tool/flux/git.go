@@ -20,8 +20,8 @@ type GitValues struct {
 	FullnameOverride string
 }
 
-func (f *FluxGit) Repository() client.Object {
-	return f.source
+func (f *FluxGit) Repositories() []client.Object {
+	return []client.Object{f.source}
 }
 
 func (f *FluxGit) Charts() []client.Object {

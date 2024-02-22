@@ -10,6 +10,6 @@ type ResourceManager interface {
 }
 
 type Resource interface {
-	Repository() client.Object
+	Repositories() []client.Object
 	Charts() []client.Object
 }
