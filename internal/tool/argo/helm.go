@@ -1,8 +1,8 @@
 package argo
 
 import (
-	"github.com/argoproj/argo-cd/pkg/apis/application"
-	argov1alpha1 "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
+	argoapi "github.com/kkb0318/argo-cd-api/api"
+	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	corev1 "k8s.io/api/core/v1"
@@ -47,7 +47,7 @@ func NewArgoHelm(obj komv1alpha1.Helm) (*ArgoHelm, error) {
 	repoName := obj.Name
 	var namespace string
 	if obj.Namespace == "" {
-		namespace = komv1alpha1.DefaultNamespace
+		namespace = komv1alpha1.ArgoCDDefaultNamespace
 	} else {
 		namespace = obj.Namespace
 	}
@@ -80,10 +80,10 @@ func NewArgoHelm(obj komv1alpha1.Helm) (*ArgoHelm, error) {
 			},
 			TypeMeta: v1.TypeMeta{
 				APIVersion: argov1alpha1.SchemeGroupVersion.String(),
-				Kind:       application.ApplicationKind,
+				Kind:       argoapi.ApplicationKind,
 			},
 			Spec: argov1alpha1.ApplicationSpec{
-				Source: argov1alpha1.ApplicationSource{
+				Source: &argov1alpha1.ApplicationSource{
 					Chart:          chart.Name,
 					TargetRevision: chart.Version,
 					RepoURL:        repoUrl,
