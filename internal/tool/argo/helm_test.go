@@ -1,9 +1,9 @@
 package argo
 
-
 import (
 	"testing"
 
+	argoapi "github.com/kkb0318/argo-cd-api/api"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
@@ -43,8 +43,14 @@ func TestArgoHelm_New(t *testing.T) {
 								Namespace: "repo-ns1",
 							},
 							TypeMeta: v1.TypeMeta{
-								APIVersion: "source.toolkit.Argocd.io/v1beta2",
-								Kind:       "HelmRepository",
+								APIVersion: corev1.SchemeGroupVersion.String(),
+								Kind:       "Secret",
+							},
+							StringData: map[string]string{
+								"name":    "chart1",
+								"type":    "helm",
+								"url":     "https://example.com",
+								"project": "default",
 							},
 						},
 					},
@@ -55,8 +61,26 @@ func TestArgoHelm_New(t *testing.T) {
 								Namespace: "repo-ns1",
 							},
 							TypeMeta: v1.TypeMeta{
-								APIVersion: "helm.toolkit.Argocd.io/v2beta2",
-								Kind:       "HelmRelease",
+								APIVersion: argov1alpha1.SchemeGroupVersion.String(),
+								Kind:       argoapi.ApplicationKind,
+							},
+							Spec: argov1alpha1.ApplicationSpec{
+								Source: &argov1alpha1.ApplicationSource{
+									Chart:          "chart1",
+									TargetRevision: "x.x.x",
+									RepoURL:        "https://example.com",
+								},
+								Destination: argov1alpha1.ApplicationDestination{
+									Namespace: "repo-ns1",
+									Server:    "https://kubernetes.default.svc",
+								},
+								Project: "default",
+								SyncPolicy: &argov1alpha1.SyncPolicy{
+									Automated: &argov1alpha1.SyncPolicyAutomated{
+										Prune:    true,
+										SelfHeal: true,
+									},
+								},
 							},
 						},
 					},
