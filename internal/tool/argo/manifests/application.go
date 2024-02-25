@@ -1,16 +1,42 @@
 package manifests
 
 import (
+	"fmt"
+
 	argoapi "github.com/kkb0318/argo-cd-api/api"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
-	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func NewApplication(chart komv1alpha1.Chart, ns, url string) *argov1alpha1.Application {
+type ApplicationBuilder struct {
+	source *argov1alpha1.ApplicationSource
+}
+
+func NewApplicationBuilder() *ApplicationBuilder {
+	return &ApplicationBuilder{}
+}
+
+func (b *ApplicationBuilder) WithHelm(name, version, url string) *ApplicationBuilder {
+	source := &argov1alpha1.ApplicationSource{
+		Chart:          name,
+		TargetRevision: version,
+		RepoURL:        url,
+	}
+	b.source = source
+	return b
+}
+
+func (b *ApplicationBuilder) WithGit() *ApplicationBuilder {
+	return b
+}
+
+func (b *ApplicationBuilder) Build(name, ns string) (*argov1alpha1.Application, error) {
+	if b.source == nil {
+		return nil, fmt.Errorf("argocd ApplicationSource is empty")
+	}
 	app := &argov1alpha1.Application{
 		ObjectMeta: v1.ObjectMeta{
-			Name:      chart.Name,
+			Name:      name,
 			Namespace: ns,
 		},
 		TypeMeta: v1.TypeMeta{
@@ -18,11 +44,7 @@ func NewApplication(chart komv1alpha1.Chart, ns, url string) *argov1alpha1.Appli
 			Kind:       argoapi.ApplicationKind,
 		},
 		Spec: argov1alpha1.ApplicationSpec{
-			Source: &argov1alpha1.ApplicationSource{
-				Chart:          chart.Name,
-				TargetRevision: chart.Version,
-				RepoURL:        url,
-			},
+			Source: b.source,
 			Destination: argov1alpha1.ApplicationDestination{
 				Namespace: ns,
 				Server:    "https://kubernetes.default.svc",
@@ -36,5 +58,5 @@ func NewApplication(chart komv1alpha1.Chart, ns, url string) *argov1alpha1.Appli
 			},
 		},
 	}
-	return app
+	return app, nil
 }

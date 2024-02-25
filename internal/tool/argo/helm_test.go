@@ -20,7 +20,7 @@ func TestArgoHelm_New(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			name: "continue if not in previous",
+			name: "create manifest for installing helm with argo",
 			inputs: []komv1alpha1.Helm{
 				{
 					Name:      "repo1",
