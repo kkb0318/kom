@@ -54,7 +54,12 @@ func NewArgoHelm(obj komv1alpha1.Helm) (*ArgoHelm, error) {
 	secrets := make([]*corev1.Secret, len(charts))
 	apps := make([]*argov1alpha1.Application, len(charts))
 	for i, chart := range charts {
-		secret := manifests.NewSecret(obj.Name, namespace, obj.Url, chart.Name)
+		secret, err := manifests.NewSecretBuilder().
+      WithHelm(chart.Name, obj.Url).
+      Build(obj.Name, namespace)
+		if err != nil {
+			return nil, err
+		}
 		app, err := manifests.NewApplicationBuilder().
 			WithHelm(chart.Name, chart.Version, obj.Url).
 			Build(chart.Name, namespace)

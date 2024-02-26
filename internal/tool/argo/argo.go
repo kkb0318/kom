@@ -21,10 +21,10 @@ func (f *Argo) Helm() ([]komtool.Resource, error) {
 	return helmResources, nil
 }
 
-// func (f *Argo) Git() ([]komtool.Resource, error) {
-// 	gitResources, err := NewArgoGitList(f.resource.Git)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return gitResources, nil
-// }
+func (f *Argo) Git() ([]komtool.Resource, error) {
+	gitResources, err := NewArgoGitList(f.resource.Git)
+	if err != nil {
+		return nil, err
+	}
+	return gitResources, nil
+}
