@@ -8,7 +8,7 @@ require (
 	github.com/fluxcd/helm-controller/api v0.37.2
 	github.com/fluxcd/kustomize-controller/api v1.2.2
 	github.com/fluxcd/source-controller/api v1.2.3
-	github.com/kkb0318/argo-cd-api v0.0.0-20240224120305-85a54f826b4e
+	github.com/kkb0318/argo-cd-api v0.0.0-20240228234702-edc335e3db22
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.10
 	github.com/stretchr/testify v1.8.4

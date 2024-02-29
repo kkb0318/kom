@@ -11,7 +11,7 @@ import (
 
 type ArgoGit struct {
 	source *corev1.Secret
-	app     *argov1alpha1.Application
+	app    *argov1alpha1.Application
 }
 
 func (f *ArgoGit) Repositories() []client.Object {
@@ -49,13 +49,13 @@ func NewArgoGit(obj komv1alpha1.Git) (*ArgoGit, error) {
 	}
 	git, err := manifests.NewApplicationBuilder().
 		WithGit(obj.Path, obj.Reference.Value, obj.Url).
-		Build(obj.Name, obj.Namespace)
+		Build(obj.Name, namespace)
 	if err != nil {
 		return nil, err
 	}
 	f := &ArgoGit{
 		source: secret,
-		app:     git,
+		app:    git,
 	}
 	return f, nil
 }

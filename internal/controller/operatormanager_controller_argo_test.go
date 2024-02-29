@@ -8,18 +8,19 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-type expected struct {
-	source types.NamespacedName
-	charts []types.NamespacedName
+type expectedArgo struct {
+	sources []types.NamespacedName
+	charts  []types.NamespacedName
 }
 
-var _ = Describe("OperatorManager controller", func() {
-	Context("OperatorManager controller test", func() {
+var _ = Describe("OperatorManager controller argocd", func() {
+	Context("OperatorManager controller argocd test", func() {
 		It("should successfully reconcile a custom resource for kom", func() {
-			komName := "test-kom-argo"
+			komName := "test-kom"
 			kom := createKom(komName)
 			kom.Spec = komv1alpha1.OperatorManagerSpec{
 				Cleanup: true,
+				Tool:    komv1alpha1.ArgoCDTool,
 				Resource: komv1alpha1.Resource{
 					Helm: []komv1alpha1.Helm{
 						{
@@ -58,43 +59,49 @@ var _ = Describe("OperatorManager controller", func() {
 			}
 			typeNamespaceName := types.NamespacedName{Name: komName, Namespace: testNamespace}
 
-			expectedHelmResources := []expected{
+			expectedHelmResources := []expectedArgo{
 				{
-					source: types.NamespacedName{
-						Name:      "helmrepo1",
-						Namespace: "kom-system",
+					sources: []types.NamespacedName{
+						{
+							Name:      "helmrepo1",
+							Namespace: "argocd",
+						},
 					},
 					charts: []types.NamespacedName{
 						{
 							Name:      "hello-world",
-							Namespace: "kom-system",
+							Namespace: "argocd",
 						},
 					},
 				},
 				{
-					source: types.NamespacedName{
-						Name:      "helmrepo2",
-						Namespace: "kom-system",
+					sources: []types.NamespacedName{
+						{
+							Name:      "helmrepo2",
+							Namespace: "argocd",
+						},
 					},
 					charts: []types.NamespacedName{
 						{
 							Name:      "podinfo",
-							Namespace: "kom-system",
+							Namespace: "argocd",
 						},
 					},
 				},
 			}
 
-			expectedGitResources := []expected{
+			expectedGitResources := []expectedArgo{
 				{
-					source: types.NamespacedName{
-						Name:      "gitrepo1",
-						Namespace: "kom-system",
+					sources: []types.NamespacedName{
+						{
+							Name:      "gitrepo1",
+							Namespace: "argocd",
+						},
 					},
 					charts: []types.NamespacedName{
 						{
 							Name:      "gitrepo1",
-							Namespace: "kom-system",
+							Namespace: "argocd",
 						},
 					},
 				},
@@ -126,15 +133,19 @@ var _ = Describe("OperatorManager controller", func() {
 
 			By("Checking if Resources were successfully created in the reconciliation")
 			for _, expected := range expectedHelmResources {
-				checkExist(expected.source, helmRepo)
+				for _, source := range expected.sources {
+					checkExist(source, secret)
+				}
 				for _, fetcher := range expected.charts {
-					checkExist(fetcher, helmRelease)
+					checkExist(fetcher, application)
 				}
 			}
 			for _, expected := range expectedGitResources {
-				checkExist(expected.source, gitRepo)
+				for _, source := range expected.sources {
+					checkExist(source, secret)
+				}
 				for _, fetcher := range expected.charts {
-					checkExist(fetcher, kustomization)
+					checkExist(fetcher, application)
 				}
 			}
 
@@ -150,14 +161,18 @@ var _ = Describe("OperatorManager controller", func() {
 			})
 			Expect(err).To(Not(HaveOccurred()))
 			// resource[0] exists
-			checkExist(expectedHelmResources[0].source, helmRepo)
+			for _, source := range expectedHelmResources[0].sources {
+				checkExist(source, secret)
+			}
 			for _, fetcher := range expectedHelmResources[0].charts {
-				checkExist(fetcher, helmRelease)
+				checkExist(fetcher, application)
 			}
 			// resource[1] does not exist
-			checkNoExist(expectedHelmResources[1].source, helmRepo)
+			for _, source := range expectedHelmResources[1].sources {
+				checkNoExist(source, secret)
+			}
 			for _, fetcher := range expectedHelmResources[1].charts {
-				checkNoExist(fetcher, helmRelease)
+				checkNoExist(fetcher, application)
 			}
 
 			By("removing the custom resource for the Kind")
@@ -172,15 +187,19 @@ var _ = Describe("OperatorManager controller", func() {
 
 			By("Checking if Resources were successfully deleted in the reconciliation")
 			for _, expected := range expectedHelmResources {
-				checkNoExist(expected.source, helmRepo)
+				for _, source := range expected.sources {
+					checkNoExist(source, secret)
+				}
 				for _, fetcher := range expected.charts {
-					checkNoExist(fetcher, helmRelease)
+					checkNoExist(fetcher, application)
 				}
 			}
 			for _, expected := range expectedGitResources {
-				checkNoExist(expected.source, gitRepo)
+				for _, source := range expected.sources {
+					checkNoExist(source, secret)
+				}
 				for _, fetcher := range expected.charts {
-					checkNoExist(fetcher, kustomization)
+					checkNoExist(fetcher, application)
 				}
 			}
 		})

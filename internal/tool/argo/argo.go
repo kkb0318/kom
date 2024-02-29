@@ -9,7 +9,7 @@ type Argo struct {
 	resource komv1alpha1.Resource
 }
 
-func NewFlux(obj komv1alpha1.OperatorManager) *Argo {
+func NewArgo(obj komv1alpha1.OperatorManager) *Argo {
 	return &Argo{obj.Spec.Resource}
 }
 

@@ -33,6 +33,17 @@ func TestArgoHelm_New(t *testing.T) {
 						},
 					},
 				},
+				{
+					Name:      "repo2",
+					Namespace: "repo-ns2",
+					Url:       "https://example.com",
+					Charts: []komv1alpha1.Chart{
+						{
+							Name:    "chart2",
+							Version: "x.x.x",
+						},
+					},
+				},
 			},
 			expected: []komtool.Resource{
 				&ArgoHelm{
@@ -72,6 +83,56 @@ func TestArgoHelm_New(t *testing.T) {
 								},
 								Destination: argov1alpha1.ApplicationDestination{
 									Namespace: "repo-ns1",
+									Server:    "https://kubernetes.default.svc",
+								},
+								Project: "default",
+								SyncPolicy: &argov1alpha1.SyncPolicy{
+									Automated: &argov1alpha1.SyncPolicyAutomated{
+										Prune:    true,
+										SelfHeal: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				&ArgoHelm{
+					source: []*corev1.Secret{
+						{
+							ObjectMeta: v1.ObjectMeta{
+								Name:      "repo2",
+								Namespace: "repo-ns2",
+							},
+							TypeMeta: v1.TypeMeta{
+								APIVersion: corev1.SchemeGroupVersion.String(),
+								Kind:       "Secret",
+							},
+							StringData: map[string]string{
+								"name":    "chart2",
+								"type":    "helm",
+								"url":     "https://example.com",
+								"project": "default",
+							},
+						},
+					},
+					helm: []*argov1alpha1.Application{
+						{
+							ObjectMeta: v1.ObjectMeta{
+								Name:      "chart2",
+								Namespace: "repo-ns2",
+							},
+							TypeMeta: v1.TypeMeta{
+								APIVersion: argov1alpha1.SchemeGroupVersion.String(),
+								Kind:       argoapi.ApplicationKind,
+							},
+							Spec: argov1alpha1.ApplicationSpec{
+								Source: &argov1alpha1.ApplicationSource{
+									Chart:          "chart2",
+									TargetRevision: "x.x.x",
+									RepoURL:        "https://example.com",
+								},
+								Destination: argov1alpha1.ApplicationDestination{
+									Namespace: "repo-ns2",
 									Server:    "https://kubernetes.default.svc",
 								},
 								Project: "default",

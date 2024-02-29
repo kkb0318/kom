@@ -77,10 +77,8 @@ github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnr
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
-github.com/kkb0318/argo-cd-api v0.0.0-20240224112933-06449348154c h1:fL0bg0NIe0hj2m6+30ijKDBsI3pf1IVLrKj5AAZ9mdQ=
-github.com/kkb0318/argo-cd-api v0.0.0-20240224112933-06449348154c/go.mod h1:CzQ443Sv+seq0jVumgodZKWWby+thjp+lt6JOXFVwFU=
-github.com/kkb0318/argo-cd-api v0.0.0-20240224120305-85a54f826b4e h1:aefOWIfARTZOtyLohpnOjW0Wl136gcrFbvxgvFATi2A=
-github.com/kkb0318/argo-cd-api v0.0.0-20240224120305-85a54f826b4e/go.mod h1:CzQ443Sv+seq0jVumgodZKWWby+thjp+lt6JOXFVwFU=
+github.com/kkb0318/argo-cd-api v0.0.0-20240228234702-edc335e3db22 h1:WjBh2DlrdKOUmRSJAm2IoM7+KbcAWrtBxGHsAYs/S4k=
+github.com/kkb0318/argo-cd-api v0.0.0-20240228234702-edc335e3db22/go.mod h1:CzQ443Sv+seq0jVumgodZKWWby+thjp+lt6JOXFVwFU=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=

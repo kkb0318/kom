@@ -1,7 +1,6 @@
 package argo
 
 import (
-
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
@@ -55,8 +54,8 @@ func NewArgoHelm(obj komv1alpha1.Helm) (*ArgoHelm, error) {
 	apps := make([]*argov1alpha1.Application, len(charts))
 	for i, chart := range charts {
 		secret, err := manifests.NewSecretBuilder().
-      WithHelm(chart.Name, obj.Url).
-      Build(obj.Name, namespace)
+			WithHelm(chart.Name, obj.Url).
+			Build(obj.Name, namespace)
 		if err != nil {
 			return nil, err
 		}

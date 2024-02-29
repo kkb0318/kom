@@ -31,6 +31,7 @@ import (
 	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
+	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -92,6 +93,8 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	err = kustomizev1.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
+	err = argov1alpha1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
 	// for argocd
 
 	//+kubebuilder:scaffold:scheme
@@ -100,6 +103,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sClient).NotTo(BeNil())
 	k8sClient.Create(ctx, createNamespace(testNamespace))
+	k8sClient.Create(ctx, createNamespace("argocd"))
 })
 
 var _ = AfterSuite(func() {
@@ -182,6 +186,7 @@ func checkNoExist(expected types.NamespacedName, newFunc func() client.Object) {
 }
 
 // -----used for assertion-----
+// -----Flux-----
 func helmRepo() client.Object {
 	return &sourcev1beta2.HelmRepository{}
 }
@@ -196,6 +201,15 @@ func gitRepo() client.Object {
 
 func kustomization() client.Object {
 	return &kustomizev1.Kustomization{}
+}
+
+// -----Argo-----
+
+func application() client.Object {
+	return &argov1alpha1.Application{}
+}
+func secret() client.Object {
+	return &corev1.Secret{}
 }
 
 func operatorManager() client.Object {

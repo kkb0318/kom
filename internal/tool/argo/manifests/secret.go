@@ -11,8 +11,8 @@ type SecretBuilder struct {
 	stringData map[string]string
 }
 
-func NewSecretBuilder() *SecretBuilder{
-  return &SecretBuilder{}
+func NewSecretBuilder() *SecretBuilder {
+	return &SecretBuilder{}
 }
 
 func (b *SecretBuilder) WithGit(url string) *SecretBuilder {

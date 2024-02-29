@@ -28,7 +28,7 @@ func (b *ApplicationBuilder) WithHelm(name, version, url string) *ApplicationBui
 
 func (b *ApplicationBuilder) WithGit(path, version, url string) *ApplicationBuilder {
 	source := &argov1alpha1.ApplicationSource{
-		Path:          path,
+		Path:           path,
 		TargetRevision: version,
 		RepoURL:        url,
 	}
