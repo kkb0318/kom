@@ -16,7 +16,7 @@ type expected struct {
 var _ = Describe("OperatorManager controller", func() {
 	Context("OperatorManager controller test", func() {
 		It("should successfully reconcile a custom resource for kom", func() {
-			komName := "test-kom"
+			komName := "test-kom-argo"
 			kom := createKom(komName)
 			kom.Spec = komv1alpha1.OperatorManagerSpec{
 				Cleanup: true,

@@ -42,12 +42,14 @@ func (h Handler) ApplyAll(ctx context.Context, r komtool.ResourceManager) ([]kom
 	resources = append(resources, helm...)
 	resources = append(resources, git...)
 	for _, resource := range resources {
-		repo := resource.Repository()
-		applied, err := h.Apply(ctx, repo)
-		if err != nil {
-			return nil, err
+		repos := resource.Repositories()
+		for _, repo := range repos {
+			applied, err := h.Apply(ctx, repo)
+			if err != nil {
+				return nil, err
+			}
+			appliedResources = append(appliedResources, *applied)
 		}
-		appliedResources = append(appliedResources, *applied)
 		charts := resource.Charts()
 		for _, chart := range charts {
 			applied, err := h.Apply(ctx, chart)
