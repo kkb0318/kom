@@ -13,7 +13,7 @@ KOM, which stands for Kubernetes Operator Manager, is an open-source software to
 
 ### Prerequisites
 
-- Kubernetes cluster with Flux 2.x installed: KOM requires a Kubernetes cluster that is already equipped with Flux version 2.x.
+- Kubernetes cluster with Flux 2.x or Argo CD installed: KOM requires a Kubernetes cluster that is already equipped with either Flux version 2.x or Argo CD for GitOps-based management.
 
 ### Installation
 
@@ -40,10 +40,7 @@ This will help you understand how to specify the Helm chart URL and version for 
 
 ## Future Plans
 
-- **Argo CD Support**:
-
-  While KOM currently supports Kubernetes clusters with Flux 2.x for GitOps-based management, we are excited to announce that future releases will include support for Argo CD.
-  This expansion will provide users with more flexibility in choosing their preferred GitOps tooling for managing Kubernetes operators.
+- **Access to Private Repositories**: We are planning to enhance KOM's capabilities by enabling it to access and manage operators from private Git repositories.
 
 ## License
 
