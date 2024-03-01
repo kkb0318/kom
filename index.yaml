@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   kom:
   - apiVersion: v2
+    appVersion: 0.1.0-alpha.2
+    created: "2024-03-01T11:07:14.440425185Z"
+    description: A Helm chart for Kubernetes
+    digest: e0a50d26168f86d2cae51634a5a48192d073106c2f84cf6397fd4684b00b952b
+    name: kom
+    type: application
+    urls:
+    - https://github.com/kkb0318/kom/releases/download/helm-kom-0.1.0-alpha.2/kom-0.1.0-alpha.2.tgz
+    version: 0.1.0-alpha.2
+  - apiVersion: v2
     appVersion: 0.1.0-alpha.1
     created: "2024-02-29T12:50:03.123250634Z"
     description: A Helm chart for Kubernetes
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://github.com/kkb0318/kom/releases/download/helm-kom-0.0.1-alpha.1/kom-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2024-02-29T12:50:03.123280759Z"
+generated: "2024-03-01T11:07:14.440478335Z"
