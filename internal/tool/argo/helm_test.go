@@ -52,6 +52,9 @@ func TestArgoHelm_New(t *testing.T) {
 							ObjectMeta: v1.ObjectMeta{
 								Name:      "repo1",
 								Namespace: "repo-ns1",
+								Labels: map[string]string{
+									"argocd.argoproj.io/secret-type": "repository",
+								},
 							},
 							TypeMeta: v1.TypeMeta{
 								APIVersion: corev1.SchemeGroupVersion.String(),
@@ -102,6 +105,9 @@ func TestArgoHelm_New(t *testing.T) {
 							ObjectMeta: v1.ObjectMeta{
 								Name:      "repo2",
 								Namespace: "repo-ns2",
+								Labels: map[string]string{
+									"argocd.argoproj.io/secret-type": "repository",
+								},
 							},
 							TypeMeta: v1.TypeMeta{
 								APIVersion: corev1.SchemeGroupVersion.String(),

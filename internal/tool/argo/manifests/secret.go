@@ -42,32 +42,16 @@ func (b *SecretBuilder) Build(name, ns string) (*corev1.Secret, error) {
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,
 			Namespace: ns,
+			Labels: map[string]string{
+				"argocd.argoproj.io/secret-type": "repository",
+			},
 		},
 		TypeMeta: v1.TypeMeta{
 			APIVersion: corev1.SchemeGroupVersion.String(),
 			Kind:       "Secret",
 		},
+
 		StringData: b.stringData,
 	}
 	return secret, nil
 }
-
-// func NewSecret(name, ns, url, chartName string) *corev1.Secret {
-// 	secret := &corev1.Secret{
-// 		ObjectMeta: v1.ObjectMeta{
-// 			Name:      name,
-// 			Namespace: ns,
-// 		},
-// 		TypeMeta: v1.TypeMeta{
-// 			APIVersion: corev1.SchemeGroupVersion.String(),
-// 			Kind:       "Secret",
-// 		},
-// 		StringData: map[string]string{
-// 			"name":    chartName,
-// 			"type":    "helm",
-// 			"url":     url,
-// 			"project": "default",
-// 		},
-// 	}
-// 	return secret
-// }
