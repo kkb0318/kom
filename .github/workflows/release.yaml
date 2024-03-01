@@ -21,6 +21,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+        # For multi platform build. See https://docs.docker.com/build/ci/github-actions/multi-platform/
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
