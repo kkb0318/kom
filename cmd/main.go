@@ -33,6 +33,10 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
+	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1"
+	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	"github.com/kkb0318/kom/internal/controller"
@@ -49,6 +53,10 @@ func init() {
 
 	utilruntime.Must(komv1alpha1.AddToScheme(scheme))
 	utilruntime.Must(argov1alpha1.AddToScheme(scheme))
+	utilruntime.Must(sourcev1beta2.AddToScheme(scheme))
+	utilruntime.Must(helmv1.AddToScheme(scheme))
+	utilruntime.Must(sourcev1.AddToScheme(scheme))
+	utilruntime.Must(kustomizev1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
