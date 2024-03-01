@@ -18,4 +18,4 @@ spec:
         path: "testdata/helm/memcached-operator/config/default"
         reference:
           type: tag # tag or branch or semver
-          values: "v1.33.0"
+          value: "v1.33.0"

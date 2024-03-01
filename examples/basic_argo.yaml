@@ -7,9 +7,15 @@ spec:
   tool: argo
   cleanup: true
   resource:
+    helm:
+      - name: repo1
+        url: https://helm.github.io/examples
+        charts:
+          - name: hello-world
+            version: x.x.x
     git:
       - name: "gitrepo1"
         url: "https://github.com/operator-framework/operator-sdk"
         path: "testdata/helm/memcached-operator/config/default"
         reference:
-          values: "v1.33.0"
+          value: "v1.33.0"
