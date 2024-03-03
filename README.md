@@ -28,7 +28,7 @@ helm repo add kkb0318 https://kkb0318.github.io/kom
 2. Install KOM using Helm:
 
 ```sh
-helm install kom kkb0318/kom
+helm install kom kkb0318/kom -n kom-system --create-namespace
 ```
 
 This command deploys KOM on the Kubernetes cluster in the default configuration. For more advanced configurations, refer to the Configuration section.
