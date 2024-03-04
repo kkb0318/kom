@@ -1,6 +1,6 @@
 # KOM (Kubernetes Operator Manager)
 
-![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kom)](https://artifacthub.io/packages/search?repo=kom)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kom)](https://artifacthub.io/packages/search?repo=kom)
 
 ## Overview
 
