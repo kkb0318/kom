@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kom
-description: A Helm chart for Kubernetes
+description: Kubernetes Operator Manager manages Operator easily
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -19,3 +19,18 @@ version: CHART_VERSION
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: APP_VERSION
+
+keywords:
+  - kubernetes
+  - kom
+  - operator-manager
+  - operator
+  - controller
+home: https://github.com/kkb0318/kom
+sources:
+  - https://github.com/kkb0318/kom
+maintainers:
+  - name: kkb
+    email: nkkb0318@gmail.com
+annotations:
+  artifacthub.io/prerelease: "false"

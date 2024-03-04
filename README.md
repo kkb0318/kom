@@ -1,5 +1,7 @@
 # KOM (Kubernetes Operator Manager)
 
+![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kom)](https://artifacthub.io/packages/search?repo=kom)
+
 ## Overview
 
 KOM, which stands for Kubernetes Operator Manager, is an open-source software tool designed to streamline the management of Kubernetes operators. It acts as an operator itself, facilitating the deployment, management, and removal of Kubernetes operators with minimal hassle.
@@ -23,6 +25,7 @@ To install KOM on your Kubernetes cluster, follow these steps:
 
 ```sh
 helm repo add kkb0318 https://kkb0318.github.io/kom
+helm repo update
 ```
 
 2. Install KOM using Helm:

@@ -1,0 +1,20 @@
+{{ template "chart.header" . }}
+
+[kom](https://github.com/kkb0318/kom) Kubernetes Operator Manager is an open-source software tool designed to streamline the management of Kubernetes operators.
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+## Get Repo Info
+
+```console
+helm repo add kkb0318 https://kkb0318.github.io/kom
+helm repo update
+```
+
+## Install Chart
+
+```console
+helm install kom kkb0318/kom -n kom-system --create-namespace
+```
+
+{{ template "chart.valuesSection" . }}
