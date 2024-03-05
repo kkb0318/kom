@@ -20,6 +20,7 @@ var _ = Describe("OperatorManager controller", func() {
 			kom := createKom(komName)
 			kom.Spec = komv1alpha1.OperatorManagerSpec{
 				Cleanup: true,
+				Tool:    komv1alpha1.FluxCDTool,
 				Resource: komv1alpha1.Resource{
 					Helm: []komv1alpha1.Helm{
 						{

@@ -36,10 +36,35 @@ helm install kom kkb0318/kom -n kom-system --create-namespace
 
 This command deploys KOM on the Kubernetes cluster in the default configuration. For more advanced configurations, refer to the Configuration section.
 
-## Deploying Your First Operator with KOM
+## Deploying with KOM
 
-After installing KOM, you can deploy your first operator by following the example manifest provided in the examples/ directory.
-This will help you understand how to specify the Helm chart URL and version for the operator you wish to deploy.
+After installing KOM, you can deploy the operator using `OperatorManager` manifest.
+
+```yaml
+apiVersion: kom.kkb.jp/v1alpha1
+kind: OperatorManager
+metadata:
+  name: kom
+  namespace: kom-system
+spec:
+  tool: flux
+  cleanup: true
+  resource:
+    helm:
+      - name: repo1
+        url: https://my.helm.url/examples
+        charts:
+          - name: chart1
+            version: x.x.x
+          - name: chart2
+            version: x.x.x
+```
+
+You can find more details about the example manifests in the `examples/` directory.
+
+## API Reference
+
+You can find the reference in the [Reference](./docs/api.md) file.
 
 ## Future Plans
 

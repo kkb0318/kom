@@ -4,6 +4,7 @@ metadata:
   name: kom
   namespace: kom-system
 spec:
+  tool: flux
   cleanup: true
   resource:
     helm:

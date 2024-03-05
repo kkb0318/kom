@@ -1,0 +1,10 @@
+processor:
+  ignoreTypes:
+    - "List$"
+    - "AppliedResource$"
+  ignoreFields:
+    - "status$"
+    - "TypeMeta$"
+
+render:
+  kubernetesVersion: 1.29

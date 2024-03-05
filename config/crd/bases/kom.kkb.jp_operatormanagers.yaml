@@ -32,60 +32,117 @@ spec:
           metadata:
             type: object
           spec:
-            description: OperatorManagerSpec defines the desired state of OperatorManager
+            description: OperatorManagerSpec defines the desired state and configuration
+              of an OperatorManager.
             properties:
               cleanup:
-                description: Cleanup enables garbage collection.
+                description: Cleanup, when enabled, allows the OperatorManager to
+                  perform garbage collection of resources that are no longer needed
+                  or managed.
                 type: boolean
               resource:
+                description: Resource specifies the source repository (Helm or Git)
+                  for the operators to be managed.
                 properties:
                   git:
+                    description: Git specifies one or more Git repositories containing
+                      the operators. This field is optional and only needed if operators
+                      are to be sourced from Git repositories.
                     items:
+                      description: Git defines the configuration for accessing a Git
+                        repository.
                       properties:
                         name:
+                          description: Name is a user-defined identifier for the resource.
                           type: string
                         namespace:
+                          description: 'Namespace is the Kubernetes namespace where
+                            the Helm repository resource is located. The default value
+                            depends on the GitOps tool used: "kom-system" for Flux
+                            and "argocd" for ArgoCD.'
                           type: string
                         path:
+                          description: Path specifies the directory path within the
+                            Git repository that contains the desired resources. This
+                            allows for selective management of resources located in
+                            specific parts of the repository.
                           type: string
                         reference:
+                          description: Reference contains the reference information
+                            (such as branch, tag, or semver) for the Git repository.
+                            This allows for targeting specific versions or configurations
+                            of the resources within the repository.
                           properties:
                             type:
+                              description: Type indicates the method of versioning
+                                used in the repository, applicable only for Flux.
+                                Valid options are "branch", "semver", or "tag", allowing
+                                for different strategies of version management.
                               type: string
                             value:
+                              description: Value specifies the exact reference to
+                                track, such as the name of a branch, a semantic versioning
+                                pattern, or a tag. This allows for precise control
+                                over which version of the resources is deployed.
                               type: string
                           type: object
                         url:
+                          description: Url is the URL of the Git repository.
                           type: string
                       type: object
                     type: array
                   helm:
+                    description: Helm specifies one or more Helm repositories containing
+                      the operators. This field is optional and only needed if operators
+                      are to be sourced from Helm repositories.
                     items:
+                      description: Helm defines the configuration for accessing a
+                        Helm repository. Depending on the GitOps tool in use (Flux
+                        or ArgoCD), it corresponds to a HelmRepository CR or a Secret,
+                        respectively.
                       properties:
                         charts:
+                          description: Charts specifies the Helm charts within the
+                            repository to be managed.
                           items:
+                            description: Chart defines the details of a Helm chart
+                              to be managed. Depending on the GitOps tool (Flux or
+                              ArgoCD), it corresponds to a HelmRelease CR or an Application
+                              CR, respectively.
                             properties:
                               name:
+                                description: Name is the name of the Helm chart.
                                 type: string
                               version:
-                                description: Namespace string `json:"namespace,omitempty"`
+                                description: Version specifies the version of the
+                                  Helm chart to be deployed.
                                 type: string
                             type: object
                           type: array
                         name:
+                          description: Name is a user-defined identifier for the resource.
                           type: string
                         namespace:
+                          description: 'Namespace is the Kubernetes namespace where
+                            the Helm repository resource is located. The default value
+                            depends on the GitOps tool used: "kom-system" for Flux
+                            and "argocd" for ArgoCD.'
                           type: string
                         url:
+                          description: Url is the URL of the Helm repository.
                           type: string
                       type: object
                     type: array
                 type: object
               tool:
+                description: Tool specifies the GitOps tool to be used. Users must
+                  set this field to either "flux" or "argo". This field is required
+                  and determines various default behaviors and configurations.
                 type: string
             required:
             - cleanup
             - resource
+            - tool
             type: object
           status:
             description: OperatorManagerStatus defines the observed state of OperatorManager
