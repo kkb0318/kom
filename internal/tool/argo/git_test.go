@@ -1,15 +1,16 @@
 package argo
 
 import (
+	"path/filepath"
+	"runtime"
 	"testing"
 
-	argoapi "github.com/kkb0318/argo-cd-api/api"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
+	"github.com/kkb0318/kom/internal/utils"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestArgoGit_New(t *testing.T) {
@@ -34,52 +35,8 @@ func TestArgoGit_New(t *testing.T) {
 			},
 			expected: []komtool.Resource{
 				&ArgoGit{
-					source: &corev1.Secret{
-						ObjectMeta: v1.ObjectMeta{
-							Name:      "repo1",
-							Namespace: "repo-ns1",
-							Labels: map[string]string{
-								"argocd.argoproj.io/secret-type": "repository",
-							},
-						},
-						TypeMeta: v1.TypeMeta{
-							APIVersion: corev1.SchemeGroupVersion.String(),
-							Kind:       "Secret",
-						},
-						StringData: map[string]string{
-							"type":    "git",
-							"url":     "https://example.com",
-							"project": "default",
-						},
-					},
-					app: &argov1alpha1.Application{
-						ObjectMeta: v1.ObjectMeta{
-							Name:      "repo1",
-							Namespace: "repo-ns1",
-						},
-						TypeMeta: v1.TypeMeta{
-							APIVersion: argov1alpha1.SchemeGroupVersion.String(),
-							Kind:       argoapi.ApplicationKind,
-						},
-						Spec: argov1alpha1.ApplicationSpec{
-							Source: &argov1alpha1.ApplicationSource{
-								Path:           "./path1",
-								TargetRevision: "1.0.0",
-								RepoURL:        "https://example.com",
-							},
-							Destination: argov1alpha1.ApplicationDestination{
-								Namespace: "repo-ns1",
-								Server:    "https://kubernetes.default.svc",
-							},
-							Project: "default",
-							SyncPolicy: &argov1alpha1.SyncPolicy{
-								Automated: &argov1alpha1.SyncPolicyAutomated{
-									Prune:    true,
-									SelfHeal: true,
-								},
-							},
-						},
-					},
+					source: newMockSecretBuilder().Build(filepath.Join(currentDir(t), "testdata", "git_secret.yaml")),
+					app: newMockApplicationBuilder().Build(filepath.Join(currentDir(t), "testdata", "git_application.yaml")),
 				},
 			},
 		},
@@ -95,4 +52,37 @@ func TestArgoGit_New(t *testing.T) {
 			}
 		})
 	}
+}
+
+type mockSecretBuilder struct{}
+
+func newMockSecretBuilder() *mockSecretBuilder {
+	return &mockSecretBuilder{}
+}
+
+func (f *mockSecretBuilder) Build(baseFilePath string) *corev1.Secret {
+	Secret := &corev1.Secret{}
+	utils.LoadYaml(Secret, baseFilePath)
+	return Secret
+}
+
+type mockApplicationBuilder struct{}
+
+func newMockApplicationBuilder() *mockApplicationBuilder {
+	return &mockApplicationBuilder{}
+}
+
+func (f *mockApplicationBuilder) Build(baseFilePath string) *argov1alpha1.Application {
+	application := &argov1alpha1.Application{}
+	utils.LoadYaml(application, baseFilePath)
+	return application
+}
+
+func currentDir(t *testing.T) string {
+	t.Helper()
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("runtime.Caller() failed to get current file path")
+	}
+	return filepath.Dir(currentFile)
 }

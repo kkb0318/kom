@@ -9,8 +9,15 @@ import (
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	"github.com/stretchr/testify/assert"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/yaml"
 )
+
+func values(hrValues string) *apiextensionsv1.JSON {
+	v, _ := yaml.YAMLToJSON([]byte(hrValues))
+	return &apiextensionsv1.JSON{Raw: v}
+}
 
 func TestFluxHelm_New(t *testing.T) {
 	tests := []struct {
@@ -30,6 +37,9 @@ func TestFluxHelm_New(t *testing.T) {
 						{
 							Name:    "chart1",
 							Version: "x.x.x",
+							Values: values(`
+                key1: val1
+                `),
 						},
 					},
 				},

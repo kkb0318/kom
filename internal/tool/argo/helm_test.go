@@ -60,6 +60,7 @@ func TestArgoHelm_New(t *testing.T) {
 								APIVersion: corev1.SchemeGroupVersion.String(),
 								Kind:       "Secret",
 							},
+							Type: corev1.SecretTypeOpaque,
 							StringData: map[string]string{
 								"name":    "chart1",
 								"type":    "helm",
@@ -113,6 +114,7 @@ func TestArgoHelm_New(t *testing.T) {
 								APIVersion: corev1.SchemeGroupVersion.String(),
 								Kind:       "Secret",
 							},
+							Type: corev1.SecretTypeOpaque,
 							StringData: map[string]string{
 								"name":    "chart2",
 								"type":    "helm",
