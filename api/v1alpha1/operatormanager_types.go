@@ -20,6 +20,7 @@ import (
 	"slices"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
 
 // Constants for OperatorManager configurations.
@@ -80,12 +81,15 @@ type Helm struct {
 // Chart defines the details of a Helm chart to be managed.
 // Depending on the GitOps tool (Flux or ArgoCD), it corresponds to a HelmRelease CR or an Application CR, respectively.
 type Chart struct {
-
 	// Name is the name of the Helm chart.
 	Name string `json:"name,omitempty"`
 
 	// Version specifies the version of the Helm chart to be deployed.
 	Version string `json:"version,omitempty"`
+
+	// Values specifies Helm values to be passed to helm template, defined as a map.
+	// +optional
+	Values *apiextensionsv1.JSON `json:"values,omitempty"`
 }
 
 // Git defines the configuration for accessing a Git repository.
