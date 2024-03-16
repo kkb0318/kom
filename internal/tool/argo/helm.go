@@ -61,6 +61,7 @@ func NewArgoHelm(obj komv1alpha1.Helm) (*ArgoHelm, error) {
 		}
 		app, err := manifests.NewApplicationBuilder().
 			WithHelm(chart.Name, chart.Version, obj.Url).
+			WithHelmValues(chart.Values).
 			Build(chart.Name, namespace)
 		if err != nil {
 			return nil, err
