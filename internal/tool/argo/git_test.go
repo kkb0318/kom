@@ -31,8 +31,8 @@ func TestArgoGit_New(t *testing.T) {
 			},
 			expected: []komtool.Resource{
 				&ArgoGit{
-					source: testdata.NewMockSecretBuilder().Build(t),
-					app:    testdata.NewMockApplicationBuilder().Build(t),
+					source: testdata.NewMockSecretBuilder().Build(t, "git_secret.yaml"),
+					app:    testdata.NewMockApplicationBuilder().Build(t, "git_application.yaml"),
 				},
 			},
 		},

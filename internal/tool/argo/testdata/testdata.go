@@ -17,7 +17,9 @@ type mockSecretBuilder struct {
 }
 
 func NewMockSecretBuilder() *mockSecretBuilder {
-	return &mockSecretBuilder{}
+	return &mockSecretBuilder{
+    stringData: map[string]string{},
+  }
 }
 
 func (f *mockSecretBuilder) WithName(val string) *mockSecretBuilder {
@@ -30,18 +32,17 @@ func (f *mockSecretBuilder) WithNamespace(val string) *mockSecretBuilder {
 	return f
 }
 
-func (f *mockSecretBuilder) WithType(val string) *mockSecretBuilder {
-	f.stringData["type"] = val
+func (f *mockSecretBuilder) WithChartName(val string) *mockSecretBuilder {
+	f.stringData["name"] = val
 	return f
 }
-
 func (f *mockSecretBuilder) WithUrl(val string) *mockSecretBuilder {
 	f.stringData["url"] = val
 	return f
 }
 
-func (f *mockSecretBuilder) Build(t *testing.T) *corev1.Secret {
-	baseFilePath := filepath.Join(currentDir(t), "git_secret.yaml")
+func (f *mockSecretBuilder) Build(t *testing.T, testdataFileName string) *corev1.Secret {
+	baseFilePath := filepath.Join(currentDir(t), testdataFileName)
 	Secret := &corev1.Secret{}
 	utils.LoadYaml(Secret, baseFilePath)
 	if f.name != "" {
@@ -50,22 +51,68 @@ func (f *mockSecretBuilder) Build(t *testing.T) *corev1.Secret {
 	if f.namespace != "" {
 		Secret.ObjectMeta.SetNamespace(f.namespace)
 	}
-	if f.stringData != nil {
-		Secret.StringData = f.stringData
-	}
+  for k, v := range f.stringData {
+    Secret.StringData[k] = v
+  }
 	return Secret
 }
 
-type mockApplicationBuilder struct{}
+type mockApplicationBuilder struct{
+	name           string
+	namespace      string
+	destNamespace  string
+	chartName      string
+	version        string
+}
 
 func NewMockApplicationBuilder() *mockApplicationBuilder {
 	return &mockApplicationBuilder{}
 }
 
-func (f *mockApplicationBuilder) Build(t *testing.T) *argov1alpha1.Application {
-	baseFilePath := filepath.Join(currentDir(t), "git_application.yaml")
+func (f *mockApplicationBuilder) WithName(val string) *mockApplicationBuilder {
+	f.name = val
+	return f
+}
+
+func (f *mockApplicationBuilder) WithNamespace(val string) *mockApplicationBuilder {
+	f.namespace = val
+	return f
+}
+
+func (f *mockApplicationBuilder) WithDestNamespace(val string) *mockApplicationBuilder {
+	f.destNamespace = val
+	return f
+}
+
+func (f *mockApplicationBuilder) WithChartName(val string) *mockApplicationBuilder {
+	f.chartName = val
+	return f
+}
+
+func (f *mockApplicationBuilder) WithVersion(val string) *mockApplicationBuilder {
+	f.version = val
+	return f
+}
+
+func (f *mockApplicationBuilder) Build(t *testing.T, testdataFileName string) *argov1alpha1.Application {
+	baseFilePath := filepath.Join(currentDir(t), testdataFileName)
 	application := &argov1alpha1.Application{}
 	utils.LoadYaml(application, baseFilePath)
+	if f.name != "" {
+		application.ObjectMeta.SetName(f.name)
+	}
+	if f.namespace != "" {
+		application.ObjectMeta.SetNamespace(f.namespace)
+	}
+	if f.destNamespace != "" {
+		application.Spec.Destination.Namespace = f.destNamespace
+	}
+	if f.chartName != "" {
+		application.Spec.Source.Chart = f.chartName
+	}
+	if f.version != "" {
+		application.Spec.Source.TargetRevision = f.version
+	}
 	return application
 }
 
