@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: repo1
+  namespace: repo-ns1
+spec:
+  interval: 1m
+  url: https://example1.com
+  ref:
+    tag: "1.0.0"

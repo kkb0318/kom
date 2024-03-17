@@ -1,0 +1,12 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: repo1
+  namespace: repo-ns1
+spec:
+  prune: true
+  path: "./path1"
+  sourceRef:
+    kind: GitRepository
+    name: repo1
+    namespace: repo-ns1
