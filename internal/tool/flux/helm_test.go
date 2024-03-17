@@ -83,6 +83,9 @@ func TestFluxHelm_New(t *testing.T) {
 										},
 									},
 								},
+								Values: values(`
+                key1: val1
+                `),
 							},
 						},
 					},

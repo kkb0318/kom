@@ -69,17 +69,11 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	}
 	hrs := make([]*helmv2beta2.HelmRelease, len(charts))
 	for i, chart := range charts {
-		// values := HelmValues{
-		// 	FullnameOverride: fmt.Sprintf("%s-controller", chart.Name),
-		// }
-		// v, err := json.Marshal(values)
-		// if err != nil {
-		// 	return nil, err
-		// }
 		hr, err := manifests.NewHelmReleaseBuilder().
       WithReference(repoName, namespace).
       WithChart(chart.Name).
       WithVersion(chart.Version).
+      WithValues(chart.Values).
 			Build(chart.Name, namespace)
 		if err != nil {
 			return nil, err
