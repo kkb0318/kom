@@ -1,0 +1,14 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: chart1
+  namespace: repo-ns1
+spec:
+  chart:
+    spec:
+      chart: chart1
+      version: "x.x.x"
+      sourceRef:
+        kind: HelmRepository
+        name: repo1
+        namespace: repo-ns1

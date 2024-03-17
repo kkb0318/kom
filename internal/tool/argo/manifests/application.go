@@ -5,7 +5,9 @@ import (
 
 	argoapi "github.com/kkb0318/argo-cd-api/api"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type ApplicationBuilder struct {
@@ -23,6 +25,16 @@ func (b *ApplicationBuilder) WithHelm(name, version, url string) *ApplicationBui
 		RepoURL:        url,
 	}
 	b.source = source
+	return b
+}
+
+func (b *ApplicationBuilder) WithHelmValues(values *apiextensionsv1.JSON) *ApplicationBuilder {
+	if values == nil {
+		return b
+	}
+	b.source.Helm.ValuesObject = &runtime.RawExtension{
+		Raw: values.Raw,
+	}
 	return b
 }
 

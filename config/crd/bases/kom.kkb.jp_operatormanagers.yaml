@@ -113,6 +113,10 @@ spec:
                               name:
                                 description: Name is the name of the Helm chart.
                                 type: string
+                              values:
+                                description: Values specifies Helm values to be passed
+                                  to helm template, defined as a map.
+                                x-kubernetes-preserve-unknown-fields: true
                               version:
                                 description: Version specifies the version of the
                                   Helm chart to be deployed.

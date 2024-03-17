@@ -50,7 +50,7 @@ func (b *SecretBuilder) Build(name, ns string) (*corev1.Secret, error) {
 			APIVersion: corev1.SchemeGroupVersion.String(),
 			Kind:       "Secret",
 		},
-
+		Type:       corev1.SecretTypeOpaque,
 		StringData: b.stringData,
 	}
 	return secret, nil

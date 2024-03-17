@@ -2,13 +2,12 @@ package flux
 
 import (
 	"strings"
-	"time"
 
 	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
 	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/kkb0318/kom/internal/tool/flux/manifests"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -62,56 +61,22 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	}
 	repoUrl := obj.Url
 	charts := obj.Charts
-	helmrepo := &sourcev1beta2.HelmRepository{
-		ObjectMeta: v1.ObjectMeta{
-			Name:      repoName,
-			Namespace: namespace,
-		},
-		TypeMeta: v1.TypeMeta{
-			APIVersion: sourcev1beta2.GroupVersion.String(),
-			Kind:       sourcev1beta2.HelmRepositoryKind,
-		},
-		Spec: sourcev1beta2.HelmRepositorySpec{
-			Type:     RepositoryType(repoUrl),
-			Interval: v1.Duration{Duration: time.Minute},
-			URL:      repoUrl,
-		},
+	helmrepo, err := manifests.NewHelmRepositoryBuilder().
+		WithUrl(repoUrl).
+		Build(repoName, namespace)
+	if err != nil {
+		return nil, err
 	}
 	hrs := make([]*helmv2beta2.HelmRelease, len(charts))
 	for i, chart := range charts {
-		chartNs := namespace
-		// values := HelmValues{
-		// 	FullnameOverride: fmt.Sprintf("%s-controller", chart.Name),
-		// }
-		// v, err := json.Marshal(values)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		hr := &helmv2beta2.HelmRelease{
-			ObjectMeta: v1.ObjectMeta{
-				Name:      chart.Name,
-				Namespace: chartNs,
-			},
-			TypeMeta: v1.TypeMeta{
-				APIVersion: helmv2beta2.GroupVersion.String(),
-				Kind:       helmv2beta2.HelmReleaseKind,
-			},
-			Spec: helmv2beta2.HelmReleaseSpec{
-				Chart: helmv2beta2.HelmChartTemplate{
-					Spec: helmv2beta2.HelmChartTemplateSpec{
-						Chart:   chart.Name,
-						Version: chart.Version,
-						SourceRef: helmv2beta2.CrossNamespaceObjectReference{
-							Kind:      sourcev1beta2.HelmRepositoryKind,
-							Name:      repoName,
-							Namespace: namespace,
-						},
-					},
-				},
-				// Values: &apiextensionsv1.JSON{
-				// 	Raw: v,
-				// },
-			},
+		hr, err := manifests.NewHelmReleaseBuilder().
+			WithReference(repoName, namespace).
+			WithChart(chart.Name).
+			WithVersion(chart.Version).
+			WithValues(chart.Values).
+			Build(chart.Name, namespace)
+		if err != nil {
+			return nil, err
 		}
 		hrs[i] = hr
 	}

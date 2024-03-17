@@ -1,16 +1,25 @@
 package flux
 
 import (
+	"fmt"
 	"testing"
-	"time"
 
 	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
-	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
+	"github.com/kkb0318/kom/internal/tool/flux/testdata"
 	"github.com/stretchr/testify/assert"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"sigs.k8s.io/yaml"
 )
+
+func values(hrValues string) *apiextensionsv1.JSON {
+	v, err := yaml.YAMLToJSON([]byte(hrValues))
+	if err != nil {
+		fmt.Println(err)
+	}
+	return &apiextensionsv1.JSON{Raw: v}
+}
 
 func TestFluxHelm_New(t *testing.T) {
 	tests := []struct {
@@ -30,51 +39,23 @@ func TestFluxHelm_New(t *testing.T) {
 						{
 							Name:    "chart1",
 							Version: "x.x.x",
+							Values: values(`
+                key1: val1
+                `),
 						},
 					},
 				},
 			},
 			expected: []komtool.Resource{
 				&FluxHelm{
-					source: &sourcev1beta2.HelmRepository{
-						ObjectMeta: v1.ObjectMeta{
-							Name:      "repo1",
-							Namespace: "repo-ns1",
-						},
-						TypeMeta: v1.TypeMeta{
-							APIVersion: "source.toolkit.fluxcd.io/v1beta2",
-							Kind:       "HelmRepository",
-						},
-						Spec: sourcev1beta2.HelmRepositorySpec{
-							Type:     "default",
-							Interval: v1.Duration{Duration: time.Minute},
-							URL:      "https://example.com",
-						},
-					},
+					source: testdata.NewMockHelmRepositoryBuilder().
+						Build(t, "helm_repository.yaml"),
 					helm: []*helmv2beta2.HelmRelease{
-						{
-							ObjectMeta: v1.ObjectMeta{
-								Name:      "chart1",
-								Namespace: "repo-ns1",
-							},
-							TypeMeta: v1.TypeMeta{
-								APIVersion: "helm.toolkit.fluxcd.io/v2beta2",
-								Kind:       "HelmRelease",
-							},
-							Spec: helmv2beta2.HelmReleaseSpec{
-								Chart: helmv2beta2.HelmChartTemplate{
-									Spec: helmv2beta2.HelmChartTemplateSpec{
-										Chart:   "chart1",
-										Version: "x.x.x",
-										SourceRef: helmv2beta2.CrossNamespaceObjectReference{
-											Kind:      "HelmRepository",
-											Name:      "repo1",
-											Namespace: "repo-ns1",
-										},
-									},
-								},
-							},
-						},
+						testdata.NewMockHelmReleaseBuilder().
+							WithValues(values(`
+                key1: val1
+                `)).
+							Build(t, "helm_release.yaml"),
 					},
 				},
 			},
