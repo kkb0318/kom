@@ -7,6 +7,7 @@ import (
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
+	"github.com/kkb0318/kom/internal/tool/flux/testdata"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,36 +54,36 @@ func TestFluxGit_New(t *testing.T) {
 			},
 			expected: []komtool.Resource{
 				&FluxGit{
-          source: NewMockGitRepositoryBuilder().Build(t, "testdata/git_repository.yaml"),
-          ks: NewMockKustomizationBuilder().Build(t, "testdata/kustomization.yaml"),
+					source: testdata.NewMockGitRepositoryBuilder().Build(t, "git_repository.yaml"),
+					ks:     testdata.NewMockKustomizationBuilder().Build(t, "kustomization.yaml"),
 				},
 				&FluxGit{
-          source: NewMockGitRepositoryBuilder().
-            WithName("repo2").
-            WithNamespace("repo-ns2").
-            WithUrl("https://example2.com").
-            WithRef(&sourcev1.GitRepositoryRef{Branch: "main"}).
-            Build(t, "testdata/git_repository.yaml"),
-          ks: NewMockKustomizationBuilder().
-            WithName("repo2").
-            WithNamespace("repo-ns2").
-            WithRef(&kustomizev1.CrossNamespaceSourceReference{Kind: "GitRepository", Name: "repo2", Namespace: "repo-ns2"}).
-            WithPath("./path2").
-            Build(t, "testdata/kustomization.yaml"),
+					source: testdata.NewMockGitRepositoryBuilder().
+						WithName("repo2").
+						WithNamespace("repo-ns2").
+						WithUrl("https://example2.com").
+						WithRef(&sourcev1.GitRepositoryRef{Branch: "main"}).
+						Build(t, "git_repository.yaml"),
+					ks: testdata.NewMockKustomizationBuilder().
+						WithName("repo2").
+						WithNamespace("repo-ns2").
+						WithRef(&kustomizev1.CrossNamespaceSourceReference{Kind: "GitRepository", Name: "repo2", Namespace: "repo-ns2"}).
+						WithPath("./path2").
+						Build(t, "kustomization.yaml"),
 				},
 				&FluxGit{
-          source: NewMockGitRepositoryBuilder().
-            WithName("repo3").
-            WithNamespace("repo-ns3").
-            WithUrl("https://example3.com").
-            WithRef(&sourcev1.GitRepositoryRef{SemVer: "x.x.x"}).
-            Build(t, "testdata/git_repository.yaml"),
-          ks: NewMockKustomizationBuilder().
-            WithName("repo3").
-            WithNamespace("repo-ns3").
-            WithRef(&kustomizev1.CrossNamespaceSourceReference{Kind: "GitRepository", Name: "repo3", Namespace: "repo-ns3"}).
-            WithPath("./path3").
-            Build(t, "testdata/kustomization.yaml"),
+					source: testdata.NewMockGitRepositoryBuilder().
+						WithName("repo3").
+						WithNamespace("repo-ns3").
+						WithUrl("https://example3.com").
+						WithRef(&sourcev1.GitRepositoryRef{SemVer: "x.x.x"}).
+						Build(t, "git_repository.yaml"),
+					ks: testdata.NewMockKustomizationBuilder().
+						WithName("repo3").
+						WithNamespace("repo-ns3").
+						WithRef(&kustomizev1.CrossNamespaceSourceReference{Kind: "GitRepository", Name: "repo3", Namespace: "repo-ns3"}).
+						WithPath("./path3").
+						Build(t, "kustomization.yaml"),
 				},
 			},
 		},
