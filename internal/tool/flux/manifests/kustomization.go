@@ -49,8 +49,8 @@ func (b *KustomizationBuilder) Build(name, ns string) (*kustomizev1.Kustomizatio
 			Kind:       kustomizev1.KustomizationKind,
 		},
 		Spec: kustomizev1.KustomizationSpec{
-			Prune: true,
-			Path:  b.path,
+			Prune:     true,
+			Path:      b.path,
 			SourceRef: *b.ref,
 		},
 	}

@@ -70,10 +70,10 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	hrs := make([]*helmv2beta2.HelmRelease, len(charts))
 	for i, chart := range charts {
 		hr, err := manifests.NewHelmReleaseBuilder().
-      WithReference(repoName, namespace).
-      WithChart(chart.Name).
-      WithVersion(chart.Version).
-      WithValues(chart.Values).
+			WithReference(repoName, namespace).
+			WithChart(chart.Name).
+			WithVersion(chart.Version).
+			WithValues(chart.Values).
 			Build(chart.Name, namespace)
 		if err != nil {
 			return nil, err

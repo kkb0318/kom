@@ -29,9 +29,9 @@ func (b *ApplicationBuilder) WithHelm(name, version, url string) *ApplicationBui
 }
 
 func (b *ApplicationBuilder) WithHelmValues(values *apiextensionsv1.JSON) *ApplicationBuilder {
-  if values == nil {
-    return b
-  }
+	if values == nil {
+		return b
+	}
 	b.source.Helm.ValuesObject = &runtime.RawExtension{
 		Raw: values.Raw,
 	}

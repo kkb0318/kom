@@ -1,7 +1,6 @@
 package flux
 
 import (
-
 	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
@@ -47,20 +46,20 @@ func NewFluxGit(obj komv1alpha1.Git) (*FluxGit, error) {
 	} else {
 		namespace = obj.Namespace
 	}
-  gitrepo, err := manifests.NewGitRepositoryBuilder().
-    WithReference(obj.Reference.Type, obj.Reference.Value).
-    WithUrl(obj.Url).
-    Build(repoName, namespace)
-  if err != nil {
-    return nil, err
-  }
-  ks, err := manifests.NewKustomizationBuilder().
-    WithReference(gitrepo.GetName(),gitrepo.GetNamespace()).
-    WithPath(obj.Path).
-    Build(repoName, namespace)
-  if err != nil {
-    return nil, err
-  }
+	gitrepo, err := manifests.NewGitRepositoryBuilder().
+		WithReference(obj.Reference.Type, obj.Reference.Value).
+		WithUrl(obj.Url).
+		Build(repoName, namespace)
+	if err != nil {
+		return nil, err
+	}
+	ks, err := manifests.NewKustomizationBuilder().
+		WithReference(gitrepo.GetName(), gitrepo.GetNamespace()).
+		WithPath(obj.Path).
+		Build(repoName, namespace)
+	if err != nil {
+		return nil, err
+	}
 	f := &FluxGit{
 		source: gitrepo,
 		ks:     ks,

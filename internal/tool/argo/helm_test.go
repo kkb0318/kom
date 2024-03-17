@@ -47,28 +47,28 @@ func TestArgoHelm_New(t *testing.T) {
 			expected: []komtool.Resource{
 				&ArgoHelm{
 					source: []*corev1.Secret{
-					  testdata.NewMockSecretBuilder().Build(t, "helm_secret.yaml"),
+						testdata.NewMockSecretBuilder().Build(t, "helm_secret.yaml"),
 					},
 					helm: []*argov1alpha1.Application{
-					  testdata.NewMockApplicationBuilder().Build(t, "helm_application.yaml"),
+						testdata.NewMockApplicationBuilder().Build(t, "helm_application.yaml"),
 					},
 				},
 				&ArgoHelm{
 					source: []*corev1.Secret{
-					  testdata.NewMockSecretBuilder().
-              WithName("repo2").
-              WithNamespace("repo-ns2").
-              WithChartName("chart2").
-              Build(t, "helm_secret.yaml"),
+						testdata.NewMockSecretBuilder().
+							WithName("repo2").
+							WithNamespace("repo-ns2").
+							WithChartName("chart2").
+							Build(t, "helm_secret.yaml"),
 					},
 					helm: []*argov1alpha1.Application{
-					  testdata.NewMockApplicationBuilder().
-              WithName("chart2").
-              WithNamespace("repo-ns2").
-              WithDestNamespace("repo-ns2").
-              WithChartName("chart2").
-              WithVersion("x.x.x").
-              Build(t, "helm_application.yaml"),
+						testdata.NewMockApplicationBuilder().
+							WithName("chart2").
+							WithNamespace("repo-ns2").
+							WithDestNamespace("repo-ns2").
+							WithChartName("chart2").
+							WithVersion("x.x.x").
+							Build(t, "helm_application.yaml"),
 					},
 				},
 			},

@@ -49,4 +49,3 @@ func TestArgoGit_New(t *testing.T) {
 		})
 	}
 }
-

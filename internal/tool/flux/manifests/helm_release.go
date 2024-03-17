@@ -5,15 +5,15 @@ import (
 
 	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
 	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type HelmReleaseBuilder struct {
 	ref     *helmv2beta2.CrossNamespaceObjectReference
 	chart   string
 	version string
-  values *apiextensionsv1.JSON
+	values  *apiextensionsv1.JSON
 }
 
 func NewHelmReleaseBuilder() *HelmReleaseBuilder {
@@ -64,7 +64,7 @@ func (b *HelmReleaseBuilder) Build(name, ns string) (*helmv2beta2.HelmRelease, e
 			Kind:       helmv2beta2.HelmReleaseKind,
 		},
 		Spec: helmv2beta2.HelmReleaseSpec{
-      Values: b.values,
+			Values: b.values,
 			Chart: helmv2beta2.HelmChartTemplate{
 				Spec: helmv2beta2.HelmChartTemplateSpec{
 					Chart:     b.chart,
