@@ -32,6 +32,9 @@ func (b *ApplicationBuilder) WithHelmValues(values *apiextensionsv1.JSON) *Appli
 	if values == nil {
 		return b
 	}
+	if b.source.Helm == nil {
+		b.source.Helm = &argov1alpha1.ApplicationSourceHelm{}
+	}
 	b.source.Helm.ValuesObject = &runtime.RawExtension{
 		Raw: values.Raw,
 	}
