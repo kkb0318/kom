@@ -1,6 +1,7 @@
 package argo
 
 import (
+	"fmt"
 	"testing"
 
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
@@ -9,6 +10,8 @@ import (
 	"github.com/kkb0318/kom/internal/tool/argo/testdata"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"sigs.k8s.io/yaml"
 )
 
 func TestArgoHelm_New(t *testing.T) {
@@ -29,6 +32,9 @@ func TestArgoHelm_New(t *testing.T) {
 						{
 							Name:    "chart1",
 							Version: "1.0.0",
+							Values: values(`
+                key1: val1
+                `),
 						},
 					},
 				},
@@ -50,7 +56,12 @@ func TestArgoHelm_New(t *testing.T) {
 						testdata.NewMockSecretBuilder().Build(t, "helm_secret.yaml"),
 					},
 					helm: []*argov1alpha1.Application{
-						testdata.NewMockApplicationBuilder().Build(t, "helm_application.yaml"),
+						testdata.NewMockApplicationBuilder().
+							WithValues(values(`
+                key1: val1
+                `),
+							).
+							Build(t, "helm_application.yaml"),
 					},
 				},
 				&ArgoHelm{
@@ -85,4 +96,12 @@ func TestArgoHelm_New(t *testing.T) {
 			}
 		})
 	}
+}
+
+func values(hrValues string) *apiextensionsv1.JSON {
+	v, err := yaml.YAMLToJSON([]byte(hrValues))
+	if err != nil {
+		fmt.Println(err)
+	}
+	return &apiextensionsv1.JSON{Raw: v}
 }

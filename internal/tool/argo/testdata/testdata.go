@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"github.com/kkb0318/kom/internal/utils"
 	corev1 "k8s.io/api/core/v1"
+	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 )
 
 type mockSecretBuilder struct {
@@ -63,6 +65,7 @@ type mockApplicationBuilder struct{
 	destNamespace  string
 	chartName      string
 	version        string
+	values    *apiextensionsv1.JSON
 }
 
 func NewMockApplicationBuilder() *mockApplicationBuilder {
@@ -94,6 +97,11 @@ func (f *mockApplicationBuilder) WithVersion(val string) *mockApplicationBuilder
 	return f
 }
 
+func (f *mockApplicationBuilder) WithValues(values *apiextensionsv1.JSON) *mockApplicationBuilder {
+	f.values = values
+	return f
+}
+
 func (f *mockApplicationBuilder) Build(t *testing.T, testdataFileName string) *argov1alpha1.Application {
 	baseFilePath := filepath.Join(currentDir(t), testdataFileName)
 	application := &argov1alpha1.Application{}
@@ -112,6 +120,14 @@ func (f *mockApplicationBuilder) Build(t *testing.T, testdataFileName string) *a
 	}
 	if f.version != "" {
 		application.Spec.Source.TargetRevision = f.version
+	}
+	if f.values != nil {
+	  if application.Spec.Source.Helm == nil {
+	  	application.Spec.Source.Helm = &argov1alpha1.ApplicationSourceHelm{}
+	  }
+	  application.Spec.Source.Helm.ValuesObject = &k8sruntime.RawExtension{
+	  	Raw: f.values.Raw,
+	  }
 	}
 	return application
 }
