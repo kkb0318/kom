@@ -51,12 +51,19 @@ spec:
   cleanup: true
   resource:
     helm:
-      - name: repo1
-        url: https://my.helm.url/examples
+      - name: jetstack
+        url: https://charts.jetstack.io
         charts:
-          - name: chart1
-            version: x.x.x
-          - name: chart2
+          - name: cert-manager
+            version: v1.14.4
+            values:
+              installCRDs: true
+              prometheus:
+                enabled: false
+      - name: repo1
+        url: https://helm.github.io/examples
+        charts:
+          - name: hello-world
             version: x.x.x
 ```
 
