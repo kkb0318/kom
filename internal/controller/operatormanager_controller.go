@@ -33,7 +33,7 @@ import (
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-const komFinalizer = "kom.kkb.jp/finalizers"
+const komFinalizer = "kom.kkb0318.github.io/finalizers"
 
 // OperatorManagerReconciler reconciles a OperatorManager object
 type OperatorManagerReconciler struct {
@@ -41,9 +41,9 @@ type OperatorManagerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=kom.kkb.jp,resources=operatormanagers/finalizers,verbs=get;create;update;patch;delete
+// +kubebuilder:rbac:groups=kom.kkb0318.github.io,resources=operatormanagers,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kom.kkb0318.github.io,resources=operatormanagers/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=kom.kkb0318.github.io,resources=operatormanagers/finalizers,verbs=get;create;update;patch;delete
 // +kubebuilder:rbac:groups=source.toolkit.fluxcd.io,resources=gitrepositories,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=source.toolkit.fluxcd.io,resources=helmrepositories,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=helm.toolkit.fluxcd.io,resources=helmreleases,verbs=get;list;watch;create;update;patch;delete

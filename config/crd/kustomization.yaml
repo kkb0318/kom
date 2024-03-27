@@ -2,7 +2,7 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/kom.kkb.jp_operatormanagers.yaml
+  - bases/kom.kkb0318.github.io_operatormanagers.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patches:
@@ -18,4 +18,4 @@ patches:
 
 # the following config is for teaching kustomize how to do kustomization for CRDs.
 configurations:
-- kustomizeconfig.yaml
+  - kustomizeconfig.yaml

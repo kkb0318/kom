@@ -2,7 +2,7 @@
 # This file is used to track the info used to scaffold your project
 # and allow the plugins properly work.
 # More info: https://book.kubebuilder.io/reference/project-config.html
-domain: kom.kkb.jp
+domain: kkb0318.github.io
 layout:
 - go.kubebuilder.io/v4
 plugins:
@@ -15,7 +15,8 @@ resources:
     crdVersion: v1
     namespaced: true
   controller: true
-  domain: kom.kkb.jp
+  domain: kkb0318.github.io
+  group: kom
   kind: OperatorManager
   path: github.com/kkb0318/kom/api/v1alpha1
   version: v1alpha1

@@ -41,7 +41,7 @@ This command deploys KOM on the Kubernetes cluster in the default configuration.
 After installing KOM, you can deploy the operator using `OperatorManager` manifest.
 
 ```yaml
-apiVersion: kom.kkb.jp/v1alpha1
+apiVersion: kom.kkb0318.github.io/v1alpha1
 kind: OperatorManager
 metadata:
   name: kom

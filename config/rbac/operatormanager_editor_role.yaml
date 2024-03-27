@@ -11,21 +11,21 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: operatormanager-editor-role
 rules:
-- apiGroups:
-  - kom.kkb.jp
-  resources:
-  - operatormanagers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - kom.kkb.jp
-  resources:
-  - operatormanagers/status
-  verbs:
-  - get
+  - apiGroups:
+      - kom.kkb0318.github.io
+    resources:
+      - operatormanagers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - kom.kkb0318.github.io
+    resources:
+      - operatormanagers/status
+    verbs:
+      - get

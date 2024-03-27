@@ -1,4 +1,4 @@
-apiVersion: kom.kkb.jp/v1alpha1
+apiVersion: kom.kkb0318.github.io/v1alpha1
 kind: OperatorManager
 metadata:
   name: kom
