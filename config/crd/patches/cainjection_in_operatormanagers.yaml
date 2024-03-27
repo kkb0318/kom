@@ -4,4 +4,4 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: CERTIFICATE_NAMESPACE/CERTIFICATE_NAME
-  name: operatormanagers.kom.kkb.jp
+  name: operatormanagers.kom.kkb0318.github.io

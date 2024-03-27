@@ -36,7 +36,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - kom.kkb.jp
+  - kom.kkb0318.github.io
   resources:
   - operatormanagers
   verbs:
@@ -48,7 +48,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - kom.kkb.jp
+  - kom.kkb0318.github.io
   resources:
   - operatormanagers/finalizers
   verbs:
@@ -58,7 +58,7 @@ rules:
   - patch
   - update
 - apiGroups:
-  - kom.kkb.jp
+  - kom.kkb0318.github.io
   resources:
   - operatormanagers/status
   verbs:

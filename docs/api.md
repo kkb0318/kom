@@ -1,10 +1,10 @@
 # API Reference
 
 ## Packages
-- [kom.kkb.jp/v1alpha1](#komkkbjpv1alpha1)
+- [kom.kkb0318.github.io/v1alpha1](#komkkb0318githubiov1alpha1)
 
 
-## kom.kkb.jp/v1alpha1
+## kom.kkb0318.github.io/v1alpha1
 
 Package v1alpha1 contains API Schema definitions for the  v1alpha1 API group
 
@@ -100,7 +100,7 @@ OperatorManager is the Schema for the operatormanagers API
 
 | Field | Description |
 | --- | --- |
-| `apiVersion` _string_ | `kom.kkb.jp/v1alpha1`
+| `apiVersion` _string_ | `kom.kkb0318.github.io/v1alpha1`
 | `kind` _string_ | `OperatorManager`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _[OperatorManagerSpec](#operatormanagerspec)_ |  |
