@@ -4,6 +4,30 @@ entries:
   - annotations:
       artifacthub.io/prerelease: "false"
     apiVersion: v2
+    appVersion: 0.2.0-alpha.1
+    created: "2024-03-27T13:51:56.93450925Z"
+    description: Kubernetes Operator Manager manages Operator easily
+    digest: 2aa85f24ee0df91c90e72f300f257ec5f288e027b8a704adbfe7be1d441f0d96
+    home: https://github.com/kkb0318/kom
+    keywords:
+    - kubernetes
+    - kom
+    - operator-manager
+    - operator
+    - controller
+    maintainers:
+    - email: nkkb0318@gmail.com
+      name: kkb
+    name: kom
+    sources:
+    - https://github.com/kkb0318/kom
+    type: application
+    urls:
+    - https://github.com/kkb0318/kom/releases/download/helm-kom-0.2.0-alpha.1/kom-0.2.0-alpha.1.tgz
+    version: 0.2.0-alpha.1
+  - annotations:
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
     appVersion: 0.1.4
     created: "2024-03-19T12:30:31.99698765Z"
     description: Kubernetes Operator Manager manages Operator easily
@@ -181,4 +205,4 @@ entries:
     urls:
     - https://github.com/kkb0318/kom/releases/download/helm-kom-0.1.0-alpha.1/kom-0.1.0-alpha.1.tgz
     version: 0.1.0-alpha.1
-generated: "2024-03-19T12:30:31.997041531Z"
+generated: "2024-03-27T13:51:56.934560576Z"
