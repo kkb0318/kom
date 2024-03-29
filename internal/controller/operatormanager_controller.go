@@ -118,6 +118,7 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 		log.Error(err, "server-side apply failed")
 		return err
 	}
+	log.Info("server-side apply completed")
 	diff, err := komstatus.Diff(beforeResources, appliedResources)
 	if err != nil {
 		return err
@@ -133,7 +134,6 @@ func (r *OperatorManagerReconciler) reconcile(ctx context.Context, obj *komv1alp
 		}
 	}
 	obj.Status.AppliedResources = appliedResources
-	log.Info("server-side apply completed")
 	return nil
 }
 
@@ -153,5 +153,6 @@ func (r *OperatorManagerReconciler) reconcileDelete(ctx context.Context, obj *ko
 		return err
 	}
 	controllerutil.RemoveFinalizer(obj, komFinalizer)
+	log.Info("All resources were successfully deleted")
 	return r.Update(ctx, obj)
 }
