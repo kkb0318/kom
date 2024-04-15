@@ -102,7 +102,7 @@ OperatorManager is the Schema for the operatormanagers API
 | --- | --- |
 | `apiVersion` _string_ | `kom.kkb0318.github.io/v1alpha1`
 | `kind` _string_ | `OperatorManager`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _[OperatorManagerSpec](#operatormanagerspec)_ |  |
 
 

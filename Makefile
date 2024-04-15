@@ -38,7 +38,7 @@ HELMIFY ?= $(LOCALBIN)/helmify
 CRD_REF_DOCS ?= $(LOCALBIN)/crd-ref-docs
 
 ## Tool Versions
-KUSTOMIZE_VERSION ?= v5.2.1
+KUSTOMIZE_VERSION ?= v5.4.1
 CONTROLLER_TOOLS_VERSION ?= v0.14.0
 # Set the Operator SDK version to use. By default, what is installed on the system is used.
 # This is useful for CI or a project to utilize a specific version of the operator-sdk toolkit.
@@ -46,7 +46,7 @@ OPERATOR_SDK_VERSION ?= v1.34.1
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.28.3
 # CRD_REF_DOCS_VERSION
-CRD_REF_DOCS_VERSION = v0.0.10
+CRD_REF_DOCS_VERSION = v0.0.12
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
