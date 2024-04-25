@@ -1,5 +1,7 @@
 # KOM (Kubernetes Operator Manager)
 
+[![GitHub release](https://img.shields.io/github/release/kkb0318/kom.svg?maxAge=60)](https://github.com/kkb0318/kom/releases)
+[![CI](https://github.com/kkb0318/kom/actions/workflows/ci.yaml/badge.svg)](https://github.com/kkb0318/kom/actions/workflows/ci.yaml)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kom)](https://artifacthub.io/packages/search?repo=kom)
 
 ## Overview
