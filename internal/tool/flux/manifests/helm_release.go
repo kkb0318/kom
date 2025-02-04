@@ -65,7 +65,7 @@ func (b *HelmReleaseBuilder) Build(name, ns string) (*helmv2beta2.HelmRelease, e
 		},
 		Spec: helmv2beta2.HelmReleaseSpec{
 			Values: b.values,
-			Chart: helmv2beta2.HelmChartTemplate{
+			Chart: &helmv2beta2.HelmChartTemplate{
 				Spec: helmv2beta2.HelmChartTemplateSpec{
 					Chart:     b.chart,
 					Version:   b.version,
