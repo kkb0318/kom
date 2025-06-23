@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -25,20 +25,20 @@ func (b *HelmRepositoryBuilder) WithUrl(value string) *HelmRepositoryBuilder {
 	return b
 }
 
-func (b *HelmRepositoryBuilder) Build(name, ns string) (*sourcev1beta2.HelmRepository, error) {
+func (b *HelmRepositoryBuilder) Build(name, ns string) (*sourcev1.HelmRepository, error) {
 	if b.url == "" {
 		return nil, errors.New("the 'url' field is empty. Please specify a valid URL")
 	}
-	helmrepo := &sourcev1beta2.HelmRepository{
+	helmrepo := &sourcev1.HelmRepository{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      name,
 			Namespace: ns,
 		},
 		TypeMeta: v1.TypeMeta{
-			APIVersion: sourcev1beta2.GroupVersion.String(),
-			Kind:       sourcev1beta2.HelmRepositoryKind,
+			APIVersion: sourcev1.GroupVersion.String(),
+			Kind:       sourcev1.HelmRepositoryKind,
 		},
-		Spec: sourcev1beta2.HelmRepositorySpec{
+		Spec: sourcev1.HelmRepositorySpec{
 			Type:     repositoryType(b.url),
 			Interval: b.interval,
 			URL:      b.url,

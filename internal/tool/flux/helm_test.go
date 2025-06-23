@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
+	helmv2 "github.com/fluxcd/helm-controller/api/v2"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	"github.com/kkb0318/kom/internal/tool/flux/testdata"
@@ -50,7 +50,7 @@ func TestFluxHelm_New(t *testing.T) {
 				&FluxHelm{
 					source: testdata.NewMockHelmRepositoryBuilder().
 						Build(t, "helm_repository.yaml"),
-					helm: []*helmv2beta2.HelmRelease{
+					helm: []*helmv2.HelmRelease{
 						testdata.NewMockHelmReleaseBuilder().
 							WithValues(values(`
                 key1: val1

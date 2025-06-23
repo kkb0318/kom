@@ -27,10 +27,9 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	helmv1 "github.com/fluxcd/helm-controller/api/v2beta2"
+	helmv2 "github.com/fluxcd/helm-controller/api/v2"
 	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
-	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	argov1alpha1 "github.com/kkb0318/argo-cd-api/api/v1alpha1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -85,11 +84,9 @@ var _ = BeforeSuite(func() {
 	err = komv1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 	// for flux
-	err = sourcev1beta2.SchemeBuilder.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
-	err = helmv1.SchemeBuilder.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
 	err = sourcev1.SchemeBuilder.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+	err = helmv2.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 	err = kustomizev1.SchemeBuilder.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
@@ -145,11 +142,11 @@ func createNamespace(ns string) *corev1.Namespace {
 	}
 }
 
-func createHelmRepository(name string) *sourcev1beta2.HelmRepository {
-	return &sourcev1beta2.HelmRepository{
+func createHelmRepository(name string) *sourcev1.HelmRepository {
+	return &sourcev1.HelmRepository{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       sourcev1beta2.HelmRepositoryKind,
-			APIVersion: sourcev1beta2.GroupVersion.String(),
+			Kind:       sourcev1.HelmRepositoryKind,
+			APIVersion: sourcev1.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -158,11 +155,11 @@ func createHelmRepository(name string) *sourcev1beta2.HelmRepository {
 	}
 }
 
-func createHelmRelease(name string) *helmv1.HelmRelease {
-	return &helmv1.HelmRelease{
+func createHelmRelease(name string) *helmv2.HelmRelease {
+	return &helmv2.HelmRelease{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       helmv1.HelmReleaseKind,
-			APIVersion: helmv1.GroupVersion.String(),
+			Kind:       helmv2.HelmReleaseKind,
+			APIVersion: helmv2.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -188,11 +185,11 @@ func checkNoExist(expected types.NamespacedName, newFunc func() client.Object) {
 // -----used for assertion-----
 // -----Flux-----
 func helmRepo() client.Object {
-	return &sourcev1beta2.HelmRepository{}
+	return &sourcev1.HelmRepository{}
 }
 
 func helmRelease() client.Object {
-	return &helmv1.HelmRelease{}
+	return &helmv2.HelmRelease{}
 }
 
 func gitRepo() client.Object {

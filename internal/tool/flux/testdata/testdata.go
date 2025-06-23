@@ -5,10 +5,9 @@ import (
 	"runtime"
 	"testing"
 
-	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
+	helmv2 "github.com/fluxcd/helm-controller/api/v2"
 	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
-	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	"github.com/kkb0318/kom/internal/utils"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
@@ -139,9 +138,9 @@ func (f *mockHelmRepositoryBuilder) WithUrl(val string) *mockHelmRepositoryBuild
 	return f
 }
 
-func (f *mockHelmRepositoryBuilder) Build(t *testing.T, testdataFileName string) *sourcev1beta2.HelmRepository {
+func (f *mockHelmRepositoryBuilder) Build(t *testing.T, testdataFileName string) *sourcev1.HelmRepository {
 	baseFilePath := filepath.Join(currentDir(t), testdataFileName)
-	helmrepo := &sourcev1beta2.HelmRepository{}
+	helmrepo := &sourcev1.HelmRepository{}
 	utils.LoadYaml(helmrepo, baseFilePath)
 	if f.name != "" {
 		helmrepo.SetName(f.name)
@@ -180,9 +179,9 @@ func (f *mockHelmReleaseBuilder) WithValues(values *apiextensionsv1.JSON) *mockH
 	return f
 }
 
-func (f *mockHelmReleaseBuilder) Build(t *testing.T, testdataFileName string) *helmv2beta2.HelmRelease {
+func (f *mockHelmReleaseBuilder) Build(t *testing.T, testdataFileName string) *helmv2.HelmRelease {
 	baseFilePath := filepath.Join(currentDir(t), testdataFileName)
-	hr := &helmv2beta2.HelmRelease{}
+	hr := &helmv2.HelmRelease{}
 	utils.LoadYaml(hr, baseFilePath)
 	if f.name != "" {
 		hr.SetName(f.name)

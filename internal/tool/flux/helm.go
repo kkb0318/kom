@@ -3,8 +3,8 @@ package flux
 import (
 	"strings"
 
-	helmv2beta2 "github.com/fluxcd/helm-controller/api/v2beta2"
-	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
+	helmv2 "github.com/fluxcd/helm-controller/api/v2"
+	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	komv1alpha1 "github.com/kkb0318/kom/api/v1alpha1"
 	komtool "github.com/kkb0318/kom/internal/tool"
 	"github.com/kkb0318/kom/internal/tool/flux/manifests"
@@ -12,8 +12,8 @@ import (
 )
 
 type FluxHelm struct {
-	source *sourcev1beta2.HelmRepository
-	helm   []*helmv2beta2.HelmRelease
+	source *sourcev1.HelmRepository
+	helm   []*helmv2.HelmRelease
 }
 
 type HelmValues struct {
@@ -67,7 +67,7 @@ func NewFluxHelm(obj komv1alpha1.Helm) (*FluxHelm, error) {
 	if err != nil {
 		return nil, err
 	}
-	hrs := make([]*helmv2beta2.HelmRelease, len(charts))
+	hrs := make([]*helmv2.HelmRelease, len(charts))
 	for i, chart := range charts {
 		hr, err := manifests.NewHelmReleaseBuilder().
 			WithReference(repoName, namespace).
